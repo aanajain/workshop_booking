@@ -112,6 +112,9 @@ class UserLoginForm(forms.Form):
     password = forms.CharField(max_length=32,
                                widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
 
+    remember_me = forms.BooleanField(required=False,
+                                     widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+
     def clean(self):
         super(UserLoginForm, self).clean()
         try:

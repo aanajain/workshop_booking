@@ -83,6 +83,8 @@ def user_login(request):
             user = form.cleaned_data
             if user.profile.is_email_verified:
                 login(request, user)
+                if not form.cleaned_data.get('remember_me'):
+                    request.session.set_expiry(0)
                 return redirect(get_landing_page(user))
             else:
                 return render(request, 'workshop_app/activation.html')

@@ -1,53 +1,484 @@
 {% extends 'workshop_app/base.html' %}
+{% load static %}
 
 {% block title %}
-    Login
+    Welcome Back | FOSSEE Workshops
 {% endblock %}
 
+{% block extra-custom-scripts %}
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+    :root {
+        --primary-color: #FF9500;
+        --secondary-color: #FFFBF6;
+        --glass-bg: rgba(18, 18, 18, 0.7);
+        --glass-border: rgba(255, 149, 0, 0.15);
+        --input-bg: rgba(30, 30, 30, 0.8);
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Urbanist', sans-serif;
+        background-color: #0b0b0b;
+        color: var(--secondary-color);
+        overflow-x: hidden;
+    }
+
+    /* Aurora Background Effect */
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 10% 20%, rgba(255, 149, 0, 0.1) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(255, 120, 0, 0.1) 0%, transparent 40%),
+                    radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 0%, #050505 100%);
+        z-index: -1;
+    }
+
+    .aurora-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -2;
+        overflow: hidden;
+    }
+
+    .aurora-blob {
+        position: absolute;
+        filter: blur(80px);
+        border-radius: 50%;
+        opacity: 0.6;
+        animation: float-blob 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform;
+    }
+
+    .aurora-blob-1 {
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(255, 149, 0, 0.15) 0%, transparent 70%);
+        top: -10%;
+        left: -10%;
+        animation-delay: 0s;
+    }
+
+    .aurora-blob-2 {
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(162, 155, 254, 0.15) 0%, transparent 70%);
+        bottom: -10%;
+        right: -10%;
+        animation-duration: 30s;
+        animation-delay: -5s;
+    }
+
+    .aurora-blob-3 {
+        width: 700px;
+        height: 700px;
+        background: radial-gradient(circle, rgba(116, 185, 255, 0.1) 0%, transparent 70%);
+        top: 20%;
+        left: 30%;
+        animation-duration: 35s;
+        animation-delay: -10s;
+    }
+
+    @keyframes float-blob {
+        0% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(15%, -10%) scale(1.1); }
+        66% { transform: translate(-10%, 15%) scale(0.9); }
+        100% { transform: translate(10%, 20%) scale(1.05); }
+    }
+
+    /* Navbar / Footer Overrides */
+    .navbar, .footer {
+        display: none !important;
+    }
+
+    .login-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border);
+        border-radius: 40px;
+        width: 100%;
+        max-width: 450px;
+        padding: 3rem 2.5rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        text-align: center;
+        animation: slideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo-container {
+        margin-bottom: 1.5rem;
+    }
+
+    .logo-container img {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        filter: drop-shadow(0 0 15px rgba(255, 149, 0, 0.4));
+    }
+
+    h1 {
+        font-weight: 700;
+        font-size: 2.2rem;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+        font-weight: 300;
+        font-size: 0.95rem;
+        opacity: 0.7;
+        margin-bottom: 2.5rem;
+    }
+
+    .form-group {
+        position: relative;
+        margin-bottom: 1.5rem;
+        text-align: left;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 300;
+        margin-left: 1.2rem;
+        margin-bottom: 0.3rem;
+        opacity: 0.6;
+    }
+
+    /* Django Form Field Styling */
+    input[type="text"], input[type="password"], input[type="email"] {
+        width: 100%;
+        background: var(--input-bg);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 1rem 1.2rem;
+        color: #fff;
+        font-family: inherit;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        outline: none;
+        box-sizing: border-box;
+    }
+
+    input[type="password"] {
+        padding-right: 45px;
+    }
+
+    input:focus {
+        border-color: var(--primary-color);
+        background: rgba(40, 40, 40, 0.9);
+        box-shadow: 0 0 0 4px rgba(255, 149, 0, 0.1);
+    }
+
+    /* Fix Autocomplete Background */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus {
+        -webkit-text-fill-color: #fff !important;
+        -webkit-box-shadow: 0 0 0px 1000px #1e1e1e inset !important;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
+    .submit-container {
+        position: relative;
+        margin-top: 2rem;
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(135deg, #FF9500, #FF7800);
+        color: white;
+        border: none;
+        border-radius: 20px;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 10px 20px -5px rgba(255, 149, 0, 0.3);
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 25px -5px rgba(255, 149, 0, 0.4);
+    }
+
+    .wordmark-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 0.2rem;
+    }
+
+    .wordmark-fossee {
+        font-weight: 900;
+        font-size: 2.2rem;
+        letter-spacing: 0px;
+        color: #ffffff;
+    }
+
+    .wordmark-workshops {
+        font-weight: 900;
+        font-size: 2.2rem;
+        letter-spacing: 0px;
+        background: linear-gradient(90deg, #74b9ff, #a29bfe, #ffa502);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .wordmark-subtitle {
+        font-weight: 500;
+        font-size: 0.9rem;
+        color: #8395a7;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-stats-pill {
+        display: inline-block;
+        padding: 0.6rem 1.8rem;
+        background: #111116;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 30px;
+        color: #dfe6e9;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        margin-bottom: 2rem;
+    }
+
+    .btn-stats-pill:hover {
+        background: #1b1b24;
+        border-color: rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+    /* Password icon wrapper */
+    .password-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 15px;
+        cursor: pointer;
+        color: var(--primary-color);
+        transition: all 0.3s ease;
+        user-select: none;
+        z-index: 20;
+        font-size: 22px;
+    }
+
+    .toggle-password:hover {
+        color: var(--primary-color);
+    }
+
+    .remember-container {
+        display: flex;
+        align-items: center;
+        margin: 1rem 0 2rem 0.5rem;
+    }
+
+    .custom-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .custom-checkbox input {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 20px !important;
+        height: 20px !important;
+        flex-shrink: 0;
+        border: 2px solid var(--primary-color);
+        border-radius: 50% !important;
+        background: transparent;
+        cursor: pointer;
+        outline: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        margin: 0;
+        position: relative;
+    }
+
+    .custom-checkbox input:checked {
+        background: var(--primary-color);
+    }
+
+    .custom-checkbox input:checked::after {
+        content: 'check';
+        font-family: 'Material Icons';
+        font-size: 14px;
+        color: white;
+    }
+
+    .custom-checkbox label {
+        margin: 0 !important;
+        cursor: pointer;
+    }
+
+    .submit-container {
+        margin-top: 1rem;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .footer-links a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 700;
+        margin-left: 4px;
+        transition: all 0.3s ease;
+    }
+
+    .footer-links a:hover {
+        text-decoration: underline;
+    }
+
+    .alert-container {
+        margin-bottom: 1.5rem;
+    }
+
+    .alert {
+        background: rgba(220, 53, 69, 0.2);
+        border: 1px solid rgba(220, 53, 69, 0.4);
+        border-radius: 15px;
+        padding: 0.8rem 1rem;
+        color: #ff8b94;
+        font-size: 0.85rem;
+        text-align: left;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 480px) {
+        .glass-card {
+            padding: 2.5rem 1.5rem;
+            border-radius: 30px;
+        }
+        h1 { font-size: 1.8rem; }
+    }
+</style>
+{% endblock %}
+
+{% block header %}{% endblock %}
+
 {% block content %}
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-md-offset-6">
-                <div class="card">
-                    <div class="card-body">
-                        <form class="px-3 py-3" method="post">
-                        {% csrf_token %}
-                        {% if form.errors %}
-                            {% for field in form %}
-                                {% for error in field.errors %}
-                                    <div class="alert alert-dismissible alert-danger">
-                                        <button type="button" class="close" data-dismiss="alert">
-                                            <i class="fa fa-close"></i>
-                                        </button>
-                                        <strong>{{ error|escape }}</strong>
-                                    </div>
-                                {% endfor %}
-                            {% endfor %}
-                            {% for error in form.non_field_errors %}
-                                <div class="alert alert-dismissible alert-danger">
-                                    <button type="button" class="close" data-dismiss="alert">
-                                        <i class="fa fa-close"></i>
-                                    </button>
-                                    <strong>{{ error|escape }}</strong>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                        <div class="form-group">
-                          <label for="id_username">Username</label>
-                          {{ form.username }}
-                        </div>
-                        <div class="form-group">
-                          <label for="id_password">Password</label>
-                          {{ form.password }}
-                        </div>
-                        <button type="submit" class="btn btn-primary">Sign in</button>
-                        </form>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{% url 'workshop_app:register' %}">New around here? Sign up</a>
-                        <a class="dropdown-item" href="{% url 'password_reset' %}">Forgot password?</a>
-                    </div>
-                </div>  
+<div class="aurora-bg">
+    <div class="aurora-blob aurora-blob-1"></div>
+    <div class="aurora-blob aurora-blob-2"></div>
+    <div class="aurora-blob aurora-blob-3"></div>
+</div>
+<div class="login-wrapper">
+    <div class="glass-card">
+        <div class="logo-container">
+            <div class="wordmark-container">
+                <span class="wordmark-fossee">FOSSEE</span> <span class="wordmark-workshops">Workshops</span>
             </div>
+            <p class="wordmark-subtitle">Developing Tomorrow's Technology Today</p>
+            <a href="{% url 'statistics_app:public' %}" class="btn-stats-pill">Check Workshop Statistics</a>
+        </div>
+        
+        <h1>Welcome Back!</h1>
+        <p class="subtitle">Sign in to your Account</p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.errors or form.non_field_errors %}
+            <div class="alert-container">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <div class="alert">{{ error|escape }}</div>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <div class="alert">{{ error|escape }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="id_username">Username</label>
+                {{ form.username }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_password">Password</label>
+                <div class="password-wrapper">
+                    {{ form.password }}
+                    <span class="material-icons toggle-password" onclick="togglePassword()">visibility_off</span>
+                </div>
+            </div>
+
+            <div class="remember-container">
+                <div class="custom-checkbox">
+                    {{ form.remember_me }}
+                    <label for="id_remember_me">Remember me</label>
+                </div>
+            </div>
+
+            <div class="submit-container">
+                <button type="submit" class="btn-submit">Sign in</button>
+            </div>
+        </form>
+
+        <div class="footer-links">
+            Don't have an account? <a href="{% url 'workshop_app:register' %}">Sign up</a>
+            <br>
+            <a href="{% url 'password_reset' %}" style="font-weight: 300; font-size: 0.8rem; opacity: 0.6; margin-top: 10px; display: inline-block;">Forgot password?</a>
         </div>
     </div>
+</div>
+
+<script>
+    function togglePassword() {
+        const passwordInput = document.querySelector('input[name="password"]');
+        const icon = document.querySelector('.toggle-password');
+        if (passwordInput && passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.textContent = 'visibility';
+        } else if (passwordInput) {
+            passwordInput.type = 'password';
+            icon.textContent = 'visibility_off';
+        }
+    }
+</script>
 {% endblock %}
+
+{% block footer %}{% endblock %}
