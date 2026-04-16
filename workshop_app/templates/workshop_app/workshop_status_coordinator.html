@@ -1,88 +1,364 @@
 {% extends "workshop_app/base.html" %}
 
-{% block title %}
-    My Workshops
-{% endblock %}
+{% block title %} Dashboard {% endblock %}
+
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
 
 {% block extra-custom-scripts %}
-<style >
-    .table-heading{
-        color: #04a9cf;
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+    :root {
+        --primary-color: #FF9500;
+        --secondary-color: #FFFBF6;
+        --glass-bg: rgba(18, 18, 18, 0.7);
+        --glass-border: rgba(255, 149, 0, 0.15);
+        --accent-blue: #0984e3;
+        --accent-green: #00cec9;
+        --accent-yellow: #f1c40f;
     }
-    </style>
+
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Urbanist', sans-serif;
+        background-color: #0b0b0b;
+        color: var(--secondary-color);
+        overflow-x: hidden;
+    }
+
+    /* Aurora Background */
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 10% 20%, rgba(255, 149, 0, 0.1) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(255, 120, 0, 0.1) 0%, transparent 40%),
+                    radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 0%, #050505 100%);
+        z-index: -1;
+    }
+
+    .aurora-bg {
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        z-index: -2; overflow: hidden;
+    }
+
+    .aurora-blob {
+        position: absolute;
+        filter: blur(80px);
+        border-radius: 50%;
+        opacity: 0.6;
+        animation: float-blob 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform;
+    }
+
+    .aurora-blob-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(255, 149, 0, 0.15) 0%, transparent 70%); top: -10%; left: -10%; }
+    .aurora-blob-2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(162, 155, 254, 0.15) 0%, transparent 70%); bottom: -10%; right: -10%; animation-duration: 30s; }
+    .aurora-blob-3 { width: 700px; height: 700px; background: radial-gradient(circle, rgba(116, 185, 255, 0.1) 0%, transparent 70%); top: 20%; left: 30%; animation-duration: 35s; }
+
+    @keyframes float-blob {
+        0% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(15%, -10%) scale(1.1); }
+        66% { transform: translate(-10%, 15%) scale(0.9); }
+        100% { transform: translate(10%, 20%) scale(1.05); }
+    }
+
+    .page-wrapper {
+        padding: 1.5rem 3rem;
+        position: relative;
+        z-index: 10;
+        min-height: 100vh;
+    }
+
+    /* Premium Top Nav */
+    .top-navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        background: rgba(30, 30, 30, 0.4);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 0.8rem 2rem;
+        border-radius: 40px;
+    }
+
+    .nav-brand {
+        font-weight: 700;
+        font-size: 1.4rem;
+        text-decoration: none;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .nav-brand span {
+        color: var(--primary-color);
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .nav-link-item {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+    }
+
+    .nav-link-item:hover, .nav-link-item.active {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 149, 0, 0.15);
+        padding: 0.5rem 1.2rem;
+        border-radius: 30px;
+        border: 1px solid rgba(255, 149, 0, 0.2);
+    }
+
+    /* Glass Cards */
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 2.5rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        margin-bottom: 2rem;
+    }
+
+    .welcome-title {
+        font-size: 2.8rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #fff, rgba(255, 255, 255, 0.5));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .welcome-sub {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.6);
+        max-width: 600px;
+        line-height: 1.6;
+    }
+
+    /* Table Styling */
+    .table-section-title {
+        font-weight: 700;
+        font-size: 1.6rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .table-glass {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1rem;
+    }
+
+    .table-glass th {
+        text-align: left;
+        padding: 1.2rem;
+        color: var(--accent-green);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 1.5px;
+        border-bottom: 2px solid rgba(0, 206, 201, 0.15);
+    }
+
+    .table-glass td {
+        padding: 1.2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.85);
+    }
+
+    .table-glass tbody tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .table-glass a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s;
+    }
+
+    .table-glass a:hover {
+        color: var(--primary-color);
+    }
+
+    /* Badges */
+    .pill-badge {
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        display: inline-block;
+    }
+
+    .badge-success-glass {
+        background: rgba(0, 184, 148, 0.15);
+        color: #55efc4;
+        border: 1px solid rgba(0, 184, 148, 0.3);
+    }
+
+    .badge-warning-glass {
+        background: rgba(253, 203, 110, 0.15);
+        color: #ffeaa7;
+        border: 1px solid rgba(253, 203, 110, 0.3);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: rgba(255, 255, 255, 0.1);
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-action {
+        background: var(--primary-color);
+        color: #000;
+        font-weight: 700;
+        padding: 0.8rem 2rem;
+        border-radius: 30px;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 1.5rem;
+        transition: transform 0.3s;
+    }
+
+    .btn-action:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(255, 149, 0, 0.3);
+    }
+
+</style>
 {% endblock %}
 
 {% block content %}
+<div class="aurora-bg">
+    <div class="aurora-blob aurora-blob-1"></div>
+    <div class="aurora-blob aurora-blob-2"></div>
+    <div class="aurora-blob aurora-blob-3"></div>
+</div>
+
+<div class="page-wrapper">
+    <!-- Premium Top Navbar -->
+    <nav class="top-navbar">
+        <a href="{% url 'workshop_app:index' %}" class="nav-brand">
+            FOSSEE <span>Workshops</span>
+        </a>
+        <div class="nav-links">
+            <a href="{% url 'workshop_app:index' %}" class="nav-link-item active">Home</a>
+            <a href="{% url 'statistics_app:public' %}" class="nav-link-item">Statistics</a>
+            <a href="{% url 'workshop_app:propose_workshop' %}" class="nav-link-item">Propose Workshop</a>
+            <a href="{% url 'workshop_app:workshop_type_list' %}" class="nav-link-item">Workshop Types</a>
+        </div>
+        <div class="user-profile">
+            <i class="material-icons">account_circle</i>
+            <span style="font-weight: 600;">{{user.get_full_name|title}}</span>
+        </div>
+    </nav>
+
     {% if not workshops %}
-        <div class="container">
-            <div class="jumbotron">
-                <h1>Welcome {{ user.first_name }}</h1>
-                <p>Information Related to your workshops will be shown here, you can also
-                    propose a Workshop as per your available date in <strong>Propose Workshop tab</strong> .</p>
-            </div>
+        <div class="glass-card text-center">
+            <i class="material-icons empty-icon">assignment_late</i>
+            <h1 class="welcome-title">Welcome, {{ user.first_name }}</h1>
+            <p class="welcome-sub mx-auto">
+                Information related to your workshops will appear here. Start your journey by proposing a new workshop on your preferred dates.
+            </p>
+            <a href="{% url 'workshop_app:propose_workshop' %}" class="btn-action">Propose Your First Workshop</a>
         </div>
     {% else %}
-        <h3 class="text-center">The status of your workshops </h3>
-        <br>
-
-        <!-- Accepted View -->
-
-        <br>
-        <div class="container">
-            <h3 class="text-center table-heading"><strong>Workshops Accepted</strong></h3>
-            <table class="table table-striped table-responsive-sm">
-                <thead>
-                <tr>
-                    <th>Workshop Name</th>
-                    <th>Instructor Name</th>
-                    <th>Workshop Day</th>
-                    <th>Status</th>
-                </tr>
-                </thead>
-
-                {% for workshop in workshops %}
+        <!-- Workshops Accepted Section -->
+        <div class="glass-card">
+            <h3 class="table-section-title">
+                <i class="material-icons" style="color: var(--accent-green)">check_circle</i>
+                Workshops Accepted
+            </h3>
+            <div class="table-responsive">
+                <table class="table-glass">
+                    <thead>
+                        <tr>
+                            <th>Workshop Name</th>
+                            <th>Instructor</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                    <tr>
-                        {% if workshop.status %}
-                            <td><a href="{% url 'workshop_app:workshop_details' workshop.id %}" >{{ workshop.workshop_type |capfirst }}</a></td>
-                            <td>{{ workshop.instructor.get_full_name }}</td>
-                            <td>{{ workshop.date | date }}</td>
-                            <td><span class="badge badge-success">{{ workshop.get_status }}</span></td>
-                        {% endif %}
-                    </tr>
+                        {% for workshop in workshops %}
+                            {% if workshop.status %}
+                            <tr>
+                                <td><a href="{% url 'workshop_app:workshop_details' workshop.id %}">{{ workshop.workshop_type.name | capfirst }}</a></td>
+                                <td>{{ workshop.instructor.get_full_name }}</td>
+                                <td>{{ workshop.date | date }}</td>
+                                <td><span class="pill-badge badge-success-glass">{{ workshop.get_status }}</span></td>
+                            </tr>
+                            {% endif %}
+                        {% empty %}
+                            <tr><td colspan="4" class="text-center" style="opacity: 0.5;">No accepted workshops yet.</td></tr>
+                        {% endfor %}
                     </tbody>
-                {% endfor %}
-
-            </table>
+                </table>
+            </div>
         </div>
 
-        <!-- Proposed View -->
-
-        <br>
-        <div class="container">
-            <h3 class="text-center table-heading"><strong>Workshops Proposed By Me</strong></h3>
-            <table class="table table-striped table-responsive-sm">
-                <thead>
-                <tr>
-                    <th>Workshop Name</th>
-                    <th>Workshop Day</th>
-                    <th>Status</th>
-                </tr>
-                </thead>
-                {% for workshop in workshops %}
+        <!-- Workshops Proposed Section -->
+        <div class="glass-card">
+            <h3 class="table-section-title">
+                <i class="material-icons" style="color: var(--accent-yellow)">hourglass_empty</i>
+                Proposed by Me
+            </h3>
+            <div class="table-responsive">
+                <table class="table-glass">
+                    <thead>
+                        <tr>
+                            <th>Workshop Name</th>
+                            <th>Proposed Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                    <tr>
-                        {% if not workshop.status and workshop.tnc_accepted %}
-                            <td><a href="{% url 'workshop_app:workshop_details' workshop.id %}" >{{ workshop.workshop_type |capfirst }}</a></td>
-                            <td>{{ workshop.date | date }}</td>
-                            <td><span class="badge badge-warning">{{ workshop.get_status }}</span></td>
-                        {% endif %}
-                    </tr>
+                        {% for workshop in workshops %}
+                            {% if not workshop.status and workshop.tnc_accepted %}
+                            <tr>
+                                <td><a href="{% url 'workshop_app:workshop_details' workshop.id %}">{{ workshop.workshop_type.name | capfirst }}</a></td>
+                                <td>{{ workshop.date | date }}</td>
+                                <td><span class="pill-badge badge-warning-glass">{{ workshop.get_status }}</span></td>
+                            </tr>
+                            {% endif %}
+                        {% empty %}
+                            <tr><td colspan="3" class="text-center" style="opacity: 0.5;">You haven't proposed any workshops yet.</td></tr>
+                        {% endfor %}
                     </tbody>
-
-                {% endfor %}
-            </table>
+                </table>
+            </div>
+            <div class="text-right">
+                <a href="{% url 'workshop_app:propose_workshop' %}" class="btn-action">Propose New Workshop</a>
+            </div>
         </div>
     {% endif %}
-
+</div>
 {% endblock %}

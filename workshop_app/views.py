@@ -39,7 +39,11 @@ __credits__ = ["Mahesh Gudi", "Aditya P.", "Ankit Javalkar",
 # Helper functions
 
 def is_email_checked(user):
-    return user.profile.is_email_verified
+    if user.is_superuser:
+        return True
+    if hasattr(user, 'profile'):
+        return user.profile.is_email_verified
+    return False
 
 
 def is_instructor(user):
@@ -81,9 +85,16 @@ def user_login(request):
         form = UserLoginForm(request.POST)
         if form.is_valid():
             user = form.cleaned_data
-            if user.profile.is_email_verified:
+            
+            if user.is_superuser:
                 login(request, user)
-                if not form.cleaned_data.get('remember_me'):
+                if not request.POST.get('remember_me'):
+                    request.session.set_expiry(0)
+                return redirect('/admin')
+                
+            if is_email_checked(user):
+                login(request, user)
+                if not request.POST.get('remember_me'):
                     request.session.set_expiry(0)
                 return redirect(get_landing_page(user))
             else:

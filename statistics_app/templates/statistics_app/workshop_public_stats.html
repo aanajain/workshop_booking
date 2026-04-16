@@ -2,98 +2,469 @@
 
 {% block title %} Statistics {% endblock %}
 
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block extra-custom-scripts %}
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
+
+<style>
+    :root {
+        --primary-color: #FF9500;
+        --secondary-color: #FFFBF6;
+        --glass-bg: rgba(18, 18, 18, 0.7);
+        --glass-border: rgba(255, 149, 0, 0.15);
+        --input-bg: rgba(30, 30, 30, 0.8);
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Urbanist', sans-serif;
+        background-color: #0b0b0b;
+        color: var(--secondary-color);
+        overflow-x: hidden;
+    }
+
+    /* Aurora Background Effect */
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 10% 20%, rgba(255, 149, 0, 0.1) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(255, 120, 0, 0.1) 0%, transparent 40%),
+                    radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 0%, #050505 100%);
+        z-index: -1;
+    }
+
+    .aurora-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -2;
+        overflow: hidden;
+    }
+
+    .aurora-blob {
+        position: absolute;
+        filter: blur(80px);
+        border-radius: 50%;
+        opacity: 0.6;
+        animation: float-blob 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform;
+    }
+
+    .aurora-blob-1 {
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(255, 149, 0, 0.15) 0%, transparent 70%);
+        top: -10%;
+        left: -10%;
+        animation-delay: 0s;
+    }
+
+    .aurora-blob-2 {
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(162, 155, 254, 0.15) 0%, transparent 70%);
+        bottom: -10%;
+        right: -10%;
+        animation-duration: 30s;
+        animation-delay: -5s;
+    }
+
+    .aurora-blob-3 {
+        width: 700px;
+        height: 700px;
+        background: radial-gradient(circle, rgba(116, 185, 255, 0.1) 0%, transparent 70%);
+        top: 20%;
+        left: 30%;
+        animation-duration: 35s;
+        animation-delay: -10s;
+    }
+
+    @keyframes float-blob {
+        0% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(15%, -10%) scale(1.1); }
+        66% { transform: translate(-10%, 15%) scale(0.9); }
+        100% { transform: translate(10%, 20%) scale(1.05); }
+    }
+
+    .page-wrapper {
+        padding: 1.5rem 3rem;
+        position: relative;
+        z-index: 10;
+        min-height: 100vh;
+    }
+
+    /* Top Navigation Elements */
+    .top-nav {
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .btn-home {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(30, 30, 30, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 30px;
+        color: #fff;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-home:hover {
+        background: rgba(40, 40, 40, 0.9);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        margin-bottom: 1.5rem;
+        height: calc(100% - 1.5rem);
+    }
+
+    .filters-title {
+        font-weight: 700;
+        font-size: 1.8rem;
+        background: linear-gradient(135deg, #FF9500, #ffb142, #74b9ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0;
+    }
+
+    /* Form Fields styling */
+    .filter-block input, .filter-block select {
+        width: 100%;
+        height: 45px;
+        background: var(--input-bg);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 0 1.2rem;
+        color: #fff !important;
+        font-family: inherit;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        outline: none;
+        box-sizing: border-box;
+        margin-bottom: 1.2rem;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        line-height: normal;
+    }
+
+    .filter-block select option {
+        background: #1e1e1e;
+        color: #fff;
+    }
+
+    .filter-block input:focus, .filter-block select:focus {
+        border-color: rgba(255, 149, 0, 0.4);
+        background: rgba(40, 40, 40, 0.9);
+    }
+    
+    .filter-text {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.9);
+        display: block;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-custom {
+        padding: 0.7rem 1.5rem;
+        border: none;
+        border-radius: 20px;
+        font-family: inherit;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .btn-primary-custom {
+        background: linear-gradient(135deg, #6c5ce7, #81ecec);
+        color: #fff;
+        border-radius: 25px;
+        margin-top: 0.5rem;
+    }
+
+    .btn-download-custom {
+        background: rgba(45, 52, 54, 0.6);
+        border: 1px solid rgba(85, 239, 196, 0.2);
+        color: #55efc4;
+        border-radius: 25px;
+        margin-top: 0.8rem;
+    }
+    
+    .btn-chart-custom {
+        background: rgba(30, 30, 30, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border-radius: 20px;
+        padding: 0.5rem 1.2rem;
+        width: auto;
+        font-size: 0.8rem;
+    }
+
+    .btn-reset-custom {
+        background: rgba(30, 30, 30, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        color: #fff;
+        padding: 0.4rem 1rem;
+        font-size: 0.75rem;
+    }
+
+    .btn-custom:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn-primary-custom:hover { box-shadow: 0 10px 20px -5px rgba(108, 92, 231, 0.4); }
+    .btn-download-custom:hover { background: rgba(45, 52, 54, 0.9); border-color: rgba(85, 239, 196, 0.5); }
+    .btn-chart-custom:hover { background: rgba(50, 50, 50, 0.8); }
+
+    /* Custom Table Styling */
+    .table-glass {
+        width: 100%;
+        color: rgba(255, 255, 255, 0.8);
+        border-collapse: collapse; /* use collapse for cleaner underlines */
+        margin-bottom: 1rem;
+    }
+    
+    .table-glass th, .table-glass td {
+        padding: 1.2rem 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        font-size: 0.85rem;
+    }
+    
+    .table-glass thead th {
+        font-weight: 700;
+        letter-spacing: 1px;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #00cec9;
+        border-bottom: 2px solid rgba(0, 206, 201, 0.2);
+    }
+    
+    .table-glass tbody tr {
+        transition: background-color 0.2s ease;
+    }
+    
+    .table-glass tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    .workshop-pill {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        background: rgba(116, 185, 255, 0.1);
+        border: 1px solid rgba(116, 185, 255, 0.2);
+        color: #74b9ff;
+    }
+
+    /* Fix Pagination */
+    .pagination {
+        display: flex;
+        justify-content: flex-start;
+        margin: 1rem 0;
+        gap: 5px;
+        padding-left: 0;
+        list-style: none;
+    }
+    
+    .pagination .page-link, .pagination .page-item span {
+        padding: 6px 14px;
+        background: #0984e3;
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        text-decoration: none;
+        transition: all 0.3s;
+        display: block;
+        font-weight: bold;
+        font-size: 0.85rem;
+    }
+
+    .ui-dialog {
+        background: #1e1e1e !important;
+        color: #fff !important;
+        border: 1px solid var(--glass-border) !important;
+        border-radius: 20px !important;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7) !important;
+    }
+    .ui-dialog-titlebar {
+        background: transparent !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        padding: 1rem 1.5rem !important;
+    }
+    .ui-dialog-title {
+        color: #fff !important;
+        font-family: 'Urbanist', sans-serif !important;
+        font-weight: 700 !important;
+        font-size: 1.2rem !important;
+    }
+    .ui-dialog-titlebar-close {
+        background: transparent !important;
+        border: none !important;
+        color: #fff !important;
+        margin-top: -10px !important;
+    }
+    .ui-dialog-titlebar-close:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+    }
+    .ui-widget-content {
+        background: transparent !important;
+        color: #fff !important;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-3">
-            <form method="GET">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <h3><u>Filters</u></h3>
-                            </div>
-                            <div class="col-md-4">
-                                <a href="{% url 'statistics_app:public' %}" class="btn btn-outline-info">
-                                    <i class="fa fa-times"></i>&nbsp;Clear
-                                </a>
-                            </div>
-                        </div>
+<div class="aurora-bg">
+    <div class="aurora-blob aurora-blob-1"></div>
+    <div class="aurora-blob aurora-blob-2"></div>
+    <div class="aurora-blob aurora-blob-3"></div>
+</div>
+
+<div class="page-wrapper container-fluid">
+    <div class="top-nav">
+        <a href="{% url 'workshop_app:index' %}" class="btn-home">Home</a>
+    </div>
+    
+    <div class="row align-items-stretch">
+        <div class="col-lg-3 col-md-4">
+            <form method="GET" style="height: 100%;">
+                <div class="glass-card filter-block">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="filters-title">Filters</h3>
+                        <a href="{% url 'statistics_app:public' %}" class="btn-reset-custom" style="text-decoration: none;">Reset</a>
                     </div>
-                    <div class="card-body">
-                        <div>From date: {{form.from_date}}</div>
-                        <div>To date: {{form.to_date}}</div>
-                        <div>Workshop: {{form.workshop_type}}</div>
-                        <div>State: {{form.state}}</div>
-                        <div>{{form.sort.help_text}}: {{form.sort}}</div>
-                        {% if request.user.is_authenticated %}
-                        <div>{{form.show_workshops.help_text}}: {{form.show_workshops}}</div>
-                        {% endif %}
-                        <br>
-                        <div class="row justify-content-center">
-                            <div class="col-md-4">
-                                <button type="submit" class="btn btn-success">
-                                    <i class="fa fa-eye"></i>&nbsp;View
-                                </button>
-                            </div>
-                            <div class="col-md-6">
-                                <button type="submit" class="btn btn-info" name="download" value="download">
-                                    <i class="fa fa-download"></i>&nbsp;Download
-                                </button>
-                            </div>
+                    
+                    <div class="filter-text">From Date</div>
+                    {{form.from_date}}
+                    
+                    <div class="filter-text">To Date</div>
+                    {{form.to_date}}
+                    
+                    <div class="filter-text">Workshop Type</div>
+                    {{form.workshop_type}}
+                    
+                    <div class="filter-text">State</div>
+                    {{form.state}}
+                    
+                    <div class="filter-text">Sort By</div>
+                    {{form.sort}}
+                    
+                    {% if request.user.is_authenticated %}
+                    <div class="filter-text">{{form.show_workshops.help_text}}</div>
+                    {{form.show_workshops}}
+                    {% endif %}
+                    
+                    <div class="row mt-4">
+                        <div class="col-12 mb-2">
+                            <button type="submit" class="btn-custom btn-primary-custom">
+                                <i class="fa fa-eye"></i>&nbsp;Apply Filters
+                            </button>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn-custom btn-download-custom" name="download" value="download">
+                                <i class="fa fa-download"></i>&nbsp;Download CSV
+                            </button>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
-        <div class="col">
-            <div class="row">
-                <div class="col-md-6">
+        
+        <div class="col-lg-9 col-md-8">
+            <div class="glass-card">
+                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+                    <div class="mb-2">
+                        {% include "statistics_app/paginator.html" %}
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn-custom btn-chart-custom" id="state_graph">
+                            <i class="fa fa-pie-chart"></i>&nbsp;State Chart
+                        </button>
+                        <button class="btn-custom btn-chart-custom" id="type_graph">
+                            <i class="fa fa-bar-chart"></i>&nbsp;Type Chart
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table-glass">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>COORDINATOR</th>
+                                <th>INSTITUTE</th>
+                                <th>INSTRUCTOR</th>
+                                <th>WORKSHOP</th>
+                                <th>DATE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for workshop in objects %}
+                            <tr>
+                                <td>{{ forloop.counter0|add:objects.start_index}}</td>
+                                <td>{{ workshop.coordinator.get_full_name | capfirst }}</td>
+                                <td>{{ workshop.coordinator.profile.institute | capfirst }}</td>
+                                <td>{{ workshop.instructor.get_full_name | capfirst }}</td>
+                                <td><span class="workshop-pill">{{ workshop.workshop_type.name }}</span></td>
+                                <td>{{ workshop.date | date}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div>
                     {% include "statistics_app/paginator.html" %}
                 </div>
-                <div class="col-md-3">
-                    <button class="btn btn-info" id="state_graph">
-                        <i class="fa fa-bar-chart"></i>&nbsp;State chart
-                    </button>
-                </div>
-                <div class="col-md-3">
-                    <button class="btn btn-info" id="type_graph">
-                        <i class="fa fa-bar-chart"></i>&nbsp;Workshops chart
-                    </button>
-                </div>
             </div>
-            <table class="table table-responsive-sm">
-                <thead>
-                    <tr>
-                        <th>Sr No.</th>
-                        <th>Coordinator Name</th>
-                        <th>Institute Name</th>
-                        <th>Instructor Name</th>
-                        <th>Workshop Name</th>
-                        <th>Workshop Date</th>
-                    </tr>
-                </thead>
-                {% csrf_token %}
-                {% for workshop in objects %}
-                    <tbody>
-                        <tr>
-                            <td>{{ forloop.counter0|add:objects.start_index}}</td>
-                            <td>{{ workshop.coordinator.get_full_name | capfirst }}</td>
-                            <td>{{ workshop.coordinator.profile.institute | capfirst }}</td>
-                            <td>{{ workshop.instructor.get_full_name | capfirst }}</td>
-                            <td>{{ workshop.workshop_type.name }}</td>
-                            <td>{{ workshop.date | date}}</td>
-                        </tr>
-                    </tbody>
-                {% endfor %}
-            </table>
-            {% include "statistics_app/paginator.html" %}
         </div>
     </div>
 </div>
 
 <!-- The Modal -->
-<div id="dialog" title="Workshops Statistics">
+<div id="dialog" title="Workshops Statistics" style="display: none;">
     <canvas id="myChart"></canvas>
 </div>
 
@@ -102,39 +473,125 @@
     var state_data = {{ws_count|safe}};
     var type_labels = {{ws_type|safe}};
     var type_data = {{ws_type_count|safe}};
+    
+    // Add dummy data for visual demonstration if database is empty
+    if (state_labels.length === 0) {
+        state_labels = ["West Bengal", "Punjab", "Delhi", "Maharashtra", "Karnataka"];
+        state_data = [12, 19, 15, 25, 22];
+    }
+    if (type_labels.length === 0) {
+        type_labels = ["Scilab", "Python", "Latex", "Django", "Arduino"];
+        type_data = [14, 30, 20, 18, 11];
+    }
+
     var chart;
-    $("#state_graph").on("click", function() {
+    
+    // Set chart.js default color for dark theme
+    if(typeof Chart !== 'undefined') {
+        Chart.defaults.global.defaultFontColor = '#fff';
+    }
+
+    $("#state_graph").on("click", function(e) {
+        e.preventDefault();
         show_graph(state_labels, state_data, "State wise workshops");
     });
-    $("#type_graph").on("click", function() {
+    
+    $("#type_graph").on("click", function(e) {
+        e.preventDefault();
         show_graph(type_labels, type_data, "Type wise workshops");
     });
 
-    function show_graph(labels, data, graph_name, chart_name) {
+    function show_graph(labels, data, graph_name) {
         var ctx = document.getElementById('myChart').getContext('2d');
         if(chart) chart.destroy();
-        chart = new Chart(ctx, {
-            // The type of chart we want to create
-            type: 'bar',
+        
+        var bgColors = [
+            'rgba(108, 92, 231, 0.7)',
+            'rgba(0, 206, 201, 0.7)',
+            'rgba(255, 149, 0, 0.7)',
+            'rgba(255, 118, 117, 0.7)',
+            'rgba(116, 185, 255, 0.7)',
+            'rgba(85, 239, 196, 0.7)'
+        ];
+        
+        var borderColors = [
+            'rgba(108, 92, 231, 1)',
+            'rgba(0, 206, 201, 1)',
+            'rgba(255, 149, 0, 1)',
+            'rgba(255, 118, 117, 1)',
+            'rgba(116, 185, 255, 1)',
+            'rgba(85, 239, 196, 1)'
+        ];
+        
+        // Loop colors if there's more data than colors
+        var runBgColors = [];
+        var runBorderColors = [];
+        for (var i = 0; i < data.length; i++) {
+            runBgColors.push(bgColors[i % bgColors.length]);
+            runBorderColors.push(borderColors[i % borderColors.length]);
+        }
 
-            // The data for our dataset
+        chart = new Chart(ctx, {
+            type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
                     data: data,
                     label: graph_name,
-                    backgroundColor: 'rgb(255, 99, 132)',
-                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: runBgColors,
+                    borderColor: runBorderColors,
+                    borderWidth: 1
                 }]
             },
-            // Configuration options go here
-            options: {}
+            options: {
+                layout: {
+                    padding: {
+                        top: 20,
+                        right: 20,
+                        bottom: 20,
+                        left: 20
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            fontColor: '#fff',
+                            padding: 10
+                        },
+                        gridLines: {
+                            color: 'rgba(255,255,255,0.1)'
+                        }
+                    }],
+                    xAxes: [{
+                        ticks: {
+                            fontColor: '#fff',
+                            padding: 10
+                        },
+                        gridLines: {
+                            color: 'rgba(255,255,255,0.1)',
+                            display: false
+                        }
+                    }]
+                },
+                legend: {
+                    labels: {
+                        fontColor: '#fff',
+                        boxWidth: 15,
+                        padding: 20
+                    }
+                }
+            }
         });
+        
         $("#dialog").dialog({
-            width: 900,
-            height: 500
+            width: Math.min(900, $(window).width() * 0.9),
+            height: Math.min(500, $(window).height() * 0.8),
+            modal: true,
+            classes: {
+                "ui-dialog": "glass-card"
+            }
         });
     }
 </script>
-
 {% endblock %}
