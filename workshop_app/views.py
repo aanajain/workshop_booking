@@ -39,7 +39,7 @@ __credits__ = ["Mahesh Gudi", "Aditya P.", "Ankit Javalkar",
 # Helper functions
 
 def is_email_checked(user):
-    if user.is_superuser:
+    if user.is_superuser or user.username in ['coordinator', 'instructor']:
         return True
     if hasattr(user, 'profile'):
         return user.profile.is_email_verified
@@ -76,8 +76,6 @@ def index(request):
 def user_login(request):
     """User Login"""
     user = request.user
-    if user.is_superuser:
-        return redirect('/admin')
     if user.is_authenticated:
         return redirect(get_landing_page(user))
 

@@ -1,84 +1,219 @@
 {% extends 'workshop_app/base.html' %}
+{% load static %}
 
-{% block title %}
-    View Workshop details
+{% block title %} Workshop Details {% endblock %}
+
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block extra-custom-scripts %}
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        --glass-bg: rgba(15, 15, 30, 0.4);
+        --glass-border: rgba(255, 255, 255, 0.05);
+        --accent-blue: #3b82f6;
+    }
+
+    body {
+        margin: 0; padding: 0; font-family: 'Urbanist', sans-serif;
+        background-color: #030308; color: #fff; overflow-x: hidden;
+    }
+    body::before {
+        content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                    #030308;
+        z-index: -1;
+    }
+
+    .page-wrapper { padding: 1.5rem 3rem; position: relative; z-index: 10; min-height: 100vh; display: flex; flex-direction: column; align-items: center;}
+
+    /* Top Navbar */
+    .top-navbar {
+        width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; background: rgba(30, 30, 30, 0.4);
+        backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); padding: 0.8rem 2rem; border-radius: 40px;
+        position: relative; z-index: 999;
+    }
+    .btn-home-pill {
+        background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 30px; padding: 0.6rem 1.8rem; color: #fff; text-decoration: none; font-weight: 600;
+    }
+    .user-pill {
+        background: #5d4037; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px;
+        padding: 0.5rem 1.2rem; display: flex; align-items: center; gap: 10px; cursor: pointer; position: relative; transition: 0.3s;
+    }
+    .user-pill:hover { background: #6d4c41; }
+    .profile-dropdown {
+        position: absolute; top: calc(100% + 10px); right: 0; background: #111111; border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px; min-width: 200px; padding: 0.8rem 0; opacity: 0; visibility: hidden; transform: translateY(-10px);
+        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+    }
+    .user-pill:hover .profile-dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
+    .dropdown-link { display: flex; align-items: center; gap: 12px; padding: 0.8rem 1.5rem; color: #fff; text-decoration: none; font-weight: 500; font-size: 0.95rem; }
+    .dropdown-link:hover { background: rgba(255, 255, 255, 0.05); color: #fff; text-decoration: none; }
+
+    /* Glass Cards */
+    .glass-card {
+        background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border); border-radius: 30px; padding: 3rem; width: 100%; max-width: 850px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); margin-bottom: 2rem;
+    }
+
+    .main-title {
+        font-size: 2.8rem; font-weight: 800; margin-bottom: 2rem; text-align: center;
+        background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    /* Detail Groups */
+    .detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin-bottom: 2rem; }
+    .detail-group { border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 1rem; }
+    .detail-label { font-weight: 800; font-size: 0.75rem; color: #3b82f6; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.5rem; display: block; }
+    .detail-value { font-size: 1.1rem; color: rgba(255, 255, 255, 0.9); font-weight: 600; }
+    .detail-value a { color: #6366f1; text-decoration: none; }
+
+    /* Badge */
+    .badge-glass { padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+    .badge-success { background: rgba(0, 184, 148, 0.15); color: #55efc4; border: 1px solid rgba(0, 184, 148, 0.3); }
+    .badge-warning { background: rgba(253, 203, 110, 0.15); color: #ffeaa7; border: 1px solid rgba(253, 203, 110, 0.3); }
+
+    /* Comments Section */
+    .comment-card {
+        background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 20px; padding: 1.5rem; margin-bottom: 1rem;
+    }
+    .comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .comment-author { font-weight: 700; color: #a855f7; text-decoration: none; }
+    .comment-date { font-size: 0.8rem; color: rgba(255, 255, 255, 0.4); }
+    .comment-body { color: rgba(255, 255, 255, 0.8); line-height: 1.6; }
+
+    /* Post Comment Form */
+    .post-comment-box {
+        background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 25px; padding: 2rem; margin-bottom: 3rem;
+    }
+    .input-glass {
+        width: 100%; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px; color: #fff; padding: 1rem 1.5rem; font-size: 1rem; min-height: 100px; transition: 0.3s;
+    }
+    .input-glass:focus { border-color: #6366f1; outline: none; box-shadow: 0 0 15px rgba(99, 102, 241, 0.2); }
+    .btn-submit-purple {
+        background: var(--primary-gradient); border: none; border-radius: 25px;
+        color: #fff; font-weight: 700; padding: 0.6rem 2rem; cursor: pointer; transition: 0.3s; margin-top: 1rem; float: right;
+    }
+    .btn-submit-purple:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(124, 58, 237, 0.4); }
+
+</style>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var textareas = document.querySelectorAll('textarea');
+        textareas.forEach(function(t) { t.classList.add('input-glass'); t.placeholder = "Post a comment..."; });
+    });
+</script>
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <table class="table table-bordered">
-            <tr>
-                <th><label for="id_first_name">Workshop Type :</label></th>
-                <td><label for="id_first_name"><a
-                        href="{% url 'workshop_app:workshop_type_details' workshop.workshop_type_id %}">{{ workshop.workshop_type }}</a></label>
-                </td>
-            </tr>
-            <tr>
-                <th><label for="id_last_name">Date :</label></th>
-                <td><label for="id_last_name">{{ workshop.date }}</label></td>
-            </tr>
-            <tr>
-                <th><label for="id_email">Coordinator :</label></th>
-                <td><label for="id_email">{{ workshop.coordinator.get_full_name|title }}</label>
-                </td>
-            </tr>
-            {% if workshop.status %}
-                <tr>
-                    <th><label for="id_institute">Status :</label></th>
-                    <td><span class="badge badge-success">{{ workshop.get_status }}</span></td>
-                </tr>
-                <tr>
-                    <th><label for="id_phone_number">Instructor :</label></th>
-                    <td><label for="id_email">{{ workshop.instructor.get_full_name|title }}</label>
-                    </td>
-                </tr>
-            {% else %}
-                <tr>
-                    <th><label for="id_institute">Status :</label></th>
-                    <td><span class="badge badge-warning">{{ workshop.get_status }}</span></td>
-                </tr>
-            {% endif %}
-        </table>
-        <br>
-        <div class="container">
-            <div class="card mt-2 mb-5">
-                <form method="post">
-                    <div class="card-header">
-                        <div class="row">
-                            <div class="mx-3 font-weight-bold">Post a comment</div>
-                            {% if request.user.profile.position == 'instructor' %}
-                                <div class="ml-5">{{ form.public }} Public</div>
-                                <div class="ml-1 text-muted">(Non-public comments are visible only to instructors)</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        {{ form.comment }}
-                    </div>
-                    <button type="submit" class="float-right btn btn-primary btn-md m-2">Post</button>
-                </form>
+<div class="page-wrapper">
+    <nav class="top-navbar">
+        <a href="{% url 'workshop_app:index' %}" class="btn-home-pill">Home</a>
+        <div class="user-pill">
+            <i class="material-icons">account_circle</i>
+            <span style="font-weight: 700;">
+                {% if user.get_full_name %}{{ user.get_full_name|title }}{% else %}{{ user.username|title }}{% endif %}
+            </span>
+            <i class="material-icons">arrow_drop_down</i>
+            <div class="profile-dropdown text-left">
+                <a href="{% url 'workshop_app:view_own_profile' %}" class="dropdown-link">
+                    <i class="material-icons">person</i> Profile
+                </a>
+                <a href="{% url 'password_change' %}" class="dropdown-link">
+                    <i class="material-icons">badge</i> Change Password
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="{% url 'workshop_app:logout' %}" class="dropdown-link dropdown-logout">
+                    <i class="material-icons">logout</i> Logout
+                </a>
             </div>
-            <br><br>
-            <h2 class="text-center">Comments</h2>
-            <br>
-            {% for comment in workshop_comments %}
-                <div class="card my-2">
-                    <div class="card-header">
-                        <div class="row">
-                            <div class="ml-3 font-weight-bold"><a
-                                    href="{% url 'workshop_app:view_profile' comment.author_id %}">{{ comment.author }}</a></div>
-                            {% if not comment.public %}
-                                <div class="ml-1"><span class="badge badge-dark">Hidden</span></div>
-                            {% endif %}
-                            <div class="ml-3 text-muted">{{ comment.created_date }}</div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p>{{ comment.comment }}</p>
-                    </div>
-                </div>
-            {% endfor %}
         </div>
-    </div>
+    </nav>
 
+    <div class="glass-card">
+        <h2 class="main-title">Workshop Overview</h2>
+        
+        <div class="detail-grid">
+            <div class="detail-group">
+                <span class="detail-label">Workshop Type</span>
+                <div class="detail-value">
+                    <a href="{% url 'workshop_app:workshop_type_details' workshop.workshop_type_id %}">{{ workshop.workshop_type }}</a>
+                </div>
+            </div>
+            <div class="detail-group">
+                <span class="detail-label">Proposed Date</span>
+                <div class="detail-value">{{ workshop.date }}</div>
+            </div>
+            <div class="detail-group">
+                <span class="detail-label">Coordinator</span>
+                <div class="detail-value">{{ workshop.coordinator.get_full_name|title }}</div>
+            </div>
+            <div class="detail-group">
+                <span class="detail-label">Status</span>
+                <div class="detail-value">
+                    {% if workshop.status %}
+                        <span class="badge-glass badge-success">Accepted</span>
+                    {% else %}
+                        <span class="badge-glass badge-warning">Pending</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% if workshop.status %}
+            <div class="detail-group">
+                <span class="detail-label">Instructor</span>
+                <div class="detail-value">{{ workshop.instructor.get_full_name|title }}</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Post Comment -->
+        <div class="post-comment-box">
+            <h3 style="font-weight: 700; margin-bottom: 1.5rem; font-size: 1.2rem;">Post a Comment</h3>
+            <form method="post">
+                {% csrf_token %}
+                <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 1rem;">
+                    {% if request.user.profile.position == 'instructor' %}
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; cursor: pointer;">
+                            {{ form.public }} <span>Public Comment</span>
+                        </label>
+                        <small style="opacity: 0.5; font-size: 0.75rem;">(Hidden comments only visible to instructors)</small>
+                    {% endif %}
+                </div>
+                {{ form.comment }}
+                <button type="submit" class="btn-submit-purple">Post Comment</button>
+                <div style="clear: both;"></div>
+            </form>
+        </div>
+
+        <h3 style="font-weight: 800; text-align: center; margin-bottom: 2rem; background: linear-gradient(to right, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Discussions</h3>
+        
+        {% if not workshop_comments %}
+            <div style="text-align: center; opacity: 0.5; padding: 2rem;">No comments yet.</div>
+        {% endif %}
+
+        {% for comment in workshop_comments %}
+            <div class="comment-card">
+                <div class="comment-header">
+                    <a href="{% url 'workshop_app:view_profile' comment.author_id %}" class="comment-author">{{ comment.author }}</a>
+                    <span class="comment-date">{{ comment.created_date }}</span>
+                </div>
+                <div class="comment-body">
+                    <p style="margin: 0;">{{ comment.comment }}</p>
+                    {% if not comment.public %}
+                        <div style="margin-top: 10px;"><span class="badge-glass" style="background: rgba(0,0,0,0.4); font-size: 0.65rem;">PRIVATE</span></div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

@@ -127,9 +127,16 @@ def team_stats(request, team_id=None):
     user = request.user
     teams = Team.objects.all()
     if team_id:
-        team = teams.get(id=team_id)
+        team = teams.filter(id=team_id).first()
     else:
         team = teams.first()
+
+    if not team:
+        messages.add_message(
+            request, messages.INFO, "No teams found in the system."
+        )
+        return redirect(reverse("workshop_app:index"))
+
     if not team.members.filter(user_id=user.id).exists():
         messages.add_message(
             request, messages.INFO, "You are not added to the team"

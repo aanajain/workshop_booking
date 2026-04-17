@@ -1,4 +1,5 @@
 {% extends "workshop_app/base.html" %}
+{% load custom_filters %}
 {% load static %}
 
 {% block title %} Propose Workshop {% endblock %}
@@ -40,7 +41,7 @@
     }
 
     .page-wrapper {
-        padding: 1.5rem 2rem;
+        padding: 1.5rem 3rem;
         position: relative;
         z-index: 10;
         min-height: 100vh;
@@ -49,44 +50,65 @@
         align-items: center;
     }
 
-    /* Premium Nav & Profile Pill */
+    /* Premium Top Nav */
     .top-navbar {
-        display: flex; justify-content: space-between; align-items: center;
-        margin-bottom: 2rem; padding: 0.8rem 1rem;
-        position: relative; z-index: 999; /* Ensure navbar is above cards */
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        background: rgba(30, 30, 30, 0.4);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 0.8rem 2rem;
+        border-radius: 40px;
+        position: relative;
+        z-index: 999;
     }
+
+    .nav-links {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+    }
+
+    .nav-link-item {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+    }
+
+    .nav-link-item:hover, .nav-link-item.active {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+        text-decoration: none;
+    }
+
     .btn-home-pill {
         background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 30px; padding: 0.6rem 1.8rem; color: #fff; text-decoration: none; font-weight: 600;
     }
-    
+    .btn-home-pill:hover { background: rgba(255, 255, 255, 0.15); color: #fff; text-decoration: none; }
+
     .user-pill {
-        background: #5d4037; /* Dark Brown from mockup */
-        border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px;
-        padding: 0.5rem 1.2rem; display: flex; align-items: center; gap: 10px;
-        cursor: pointer; position: relative; transition: 0.3s;
+        background: #5d4037; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px;
+        padding: 0.5rem 1.2rem; display: flex; align-items: center; gap: 10px; cursor: pointer; position: relative; transition: 0.3s;
     }
     .user-pill:hover { background: #6d4c41; }
-
+    
     .profile-dropdown {
-        position: absolute; top: calc(100% + 10px); right: 0;
-        background: #111111; border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 15px; min-width: 220px; padding: 0.8rem 0;
-        opacity: 0; visibility: hidden; transform: translateY(-10px);
-        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        position: absolute; top: calc(100% + 10px); right: 0; background: #111111; border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px; min-width: 220px; padding: 0.8rem 0; opacity: 0; visibility: hidden; transform: translateY(-10px);
+        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
     }
     .user-pill:hover .profile-dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
-    
-    .dropdown-link {
-        display: flex; align-items: center; gap: 12px; padding: 0.8rem 1.5rem;
-        color: #fff; text-decoration: none; font-weight: 500; font-size: 0.95rem;
-    }
-    .dropdown-link:hover { background: rgba(255, 255, 255, 0.05); text-decoration: none; color: #fff; }
-    .dropdown-link i { font-size: 20px; opacity: 0.8; }
-    
+    .dropdown-link { display: flex; align-items: center; gap: 12px; padding: 0.8rem 1.5rem; color: #fff; text-decoration: none; font-weight: 500; font-size: 0.95rem; }
+    .dropdown-link:hover { background: rgba(255, 255, 255, 0.05); color: #fff; text-decoration: none; }
     .dropdown-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 0.5rem 0; }
-    
     .dropdown-logout { color: #ff5252 !important; }
     .dropdown-logout i { color: #ff5252 !important; }
 
@@ -103,7 +125,7 @@
         align-items: center;
         justify-content: center;
         gap: 12px;
-        margin-bottom: 3rem;
+        margin-bottom: 2.5rem;
         font-size: 0.95rem;
         color: rgba(255, 255, 255, 0.8);
     }
@@ -115,21 +137,27 @@
     .main-title {
         font-size: 3rem;
         font-weight: 800;
-        margin-bottom: 3rem;
+        margin-bottom: 2.5rem;
         background: linear-gradient(to right, #6366f1, #a855f7);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        text-align: center;
     }
 
-    /* Form Layout to match screenshot */
-    .compact-form {
+    /* Form Layout */
+    .compact-form-container {
         width: 100%;
-        max-width: 500px;
-        text-align: left;
+        max-width: 550px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        backdrop-filter: blur(25px);
+        padding: 3rem;
+        border-radius: 40px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     }
 
     .form-group-custom {
-        margin-bottom: 2.5rem;
+        margin-bottom: 2rem;
     }
 
     .form-group-custom label {
@@ -162,7 +190,7 @@
 
     .btn-submit-purple {
         width: 100%;
-        height: 55px;
+        height: 60px;
         background: var(--primary-gradient);
         border: none;
         border-radius: 30px;
@@ -176,33 +204,33 @@
     }
 
     .btn-submit-purple:hover {
-        transform: translateY(-2px);
+        transform: translateY(-3px);
         box-shadow: 0 15px 40px rgba(124, 58, 237, 0.5);
     }
 
-    /* Datepicker styling for this theme */
+    /* Datepicker styling */
     .ui-datepicker {
-        background: rgba(10, 10, 20, 0.98) !important;
+        background: rgba(15, 15, 30, 0.95) !important;
+        backdrop-filter: blur(15px);
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         border-radius: 20px !important;
-        padding: 20px !important;
-    }
-    .ui-datepicker-header { background: transparent !important; border: none !important; }
-    .ui-datepicker-calendar .ui-state-default {
-        background: transparent !important;
-        border: none !important;
+        padding: 15px !important;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.6);
         color: #fff !important;
-        border-radius: 10px !important;
-        width: 35px !important; height: 35px !important;
-        display: flex !important; align-items: center !important; justify-content: center !important;
     }
-    .ui-datepicker-calendar .ui-state-active {
-        background: #6366f1 !important;
-        font-weight: 700 !important;
+    .ui-datepicker-header { background: transparent !important; border: none !important; color: #fff !important; }
+    .ui-datepicker-title { color: #fff !important; font-weight: 700; }
+    .ui-datepicker-calendar th { color: #6366f1 !important; text-transform: uppercase; font-size: 0.7rem; }
+    .ui-datepicker-calendar .ui-state-default {
+        background: rgba(255,255,255,0.03) !important; border: 1px solid rgba(255,255,255,0.05) !important;
+        color: #fff !important; margin: 2px !important; width: 32px !important; height: 32px !important;
+        display: flex !important; align-items: center !important; justify-content: center !important; border-radius: 8px !important; transition: 0.2s;
     }
+    .ui-datepicker-calendar .ui-state-hover { background: #6366f1 !important; color: #fff !important; }
+    .ui-datepicker-calendar .ui-state-active { background: #a855f7 !important; border: none !important; font-weight: 800 !important; }
+    .ui-datepicker-next span, .ui-datepicker-prev span { filter: invert(1); }
 
-    /* Dropdown Overrides */
-    select.input-glass option { background: #030308; }
+    select.input-glass option { background: #0b0b1a; color: #fff; }
 
 </style>
 
@@ -212,7 +240,7 @@
         dateToday.setDate(dateToday.getDate() + 3);
 
         const dateInput = $('input[name="date"]');
-        dateInput.addClass('input-glass').attr('placeholder', 'Workshop Date').attr('readonly', 'readonly');
+        dateInput.addClass('input-glass').attr('placeholder', 'Preferred Workshop Date').attr('readonly', 'readonly');
         
         dateInput.datepicker({
             changeMonth: true, changeYear: true,
@@ -228,37 +256,43 @@
 
 {% block content %}
 <div class="page-wrapper">
-    <!-- Navbar -->
+    <!-- Premium Top Nav -->
     <nav class="top-navbar">
         <a href="{% url 'workshop_app:index' %}" class="btn-home-pill">Home</a>
-        <div class="nav-links-center">
-            <a href="{% url 'workshop_app:index' %}" class="nav-item-link">Workshop Status</a>
-            <a href="{% url 'workshop_app:propose_workshop' %}" class="nav-item-link active">Propose Workshop</a>
-            <a href="{% url 'workshop_app:workshop_type_list' %}" class="nav-item-link">Workshop Types</a>
-        </div>
-    <div class="user-pill">
-        <i class="material-icons">account_circle</i>
-        <span style="font-weight: 700;">
-            {% if user.get_full_name %}{{ user.get_full_name|title }}{% else %}{{ user.username|title }}{% endif %}
-        </span>
-        <i class="material-icons">arrow_drop_down</i>
         
-        <div class="profile-dropdown">
-            <a href="{% url 'workshop_app:view_own_profile' %}" class="dropdown-link">
-                <i class="material-icons">person</i> Profile
-            </a>
-            <a href="{% url 'password_change' %}" class="dropdown-link">
-                <i class="material-icons">badge</i> Change Password
-            </a>
-            <div class="dropdown-divider"></div>
-            <a href="{% url 'workshop_app:logout' %}" class="dropdown-link dropdown-logout">
-                <i class="material-icons">logout</i> Logout
-            </a>
+        <div class="nav-links">
+            {% if request.user|has_group:"instructor" %}
+                <a href="{% url 'statistics_app:team' %}" class="nav-link-item">Team Statistics</a>
+            {% endif %}
+            <a href="{% url 'workshop_app:index' %}" class="nav-link-item">Workshop Status</a>
+            {% if not request.user|has_group:"instructor" %}
+                <a href="{% url 'workshop_app:propose_workshop' %}" class="nav-link-item active">Propose Workshop</a>
+            {% endif %}
+            <a href="{% url 'workshop_app:workshop_type_list' %}" class="nav-link-item">Workshop Types</a>
         </div>
-    </div>
-</nav>
+        
+        <div class="user-pill">
+            <i class="material-icons">account_circle</i>
+            <span style="font-weight: 700;">
+                {% if user.get_full_name %}{{ user.get_full_name|title }}{% else %}{{ user.username|title }}{% endif %}
+            </span>
+            <i class="material-icons">arrow_drop_down</i>
+            
+            <div class="profile-dropdown">
+                <a href="{% url 'workshop_app:view_own_profile' %}" class="dropdown-link">
+                    <i class="material-icons">person</i> Profile
+                </a>
+                <a href="{% url 'password_change' %}" class="dropdown-link">
+                    <i class="material-icons">badge</i> Change Password
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="{% url 'workshop_app:logout' %}" class="dropdown-link dropdown-logout">
+                    <i class="material-icons">logout</i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
 
-    <!-- Success Note Bar -->
     <div class="note-info-bar">
         <i class="material-icons">info</i>
         <span>Note: Before proposing the workshop, please check the workshop details in the <a href="{% url 'workshop_app:workshop_type_list' %}">Workshop Types</a> section.</span>
@@ -266,35 +300,33 @@
 
     <h1 class="main-title">Propose Workshop</h1>
 
-    <div class="compact-form">
-        <form method="post">
+    <div class="compact-form-container">
+        <form action="" method="post">
             {% csrf_token %}
-            
+            {% if form.errors %}
+                <div style="background: rgba(255, 82, 82, 0.1); border: 1.5px solid #ff5252; padding: 1rem; border-radius: 20px; margin-bottom: 2rem; color: #ff5252; font-weight: 700;">
+                    Please correct the errors below.
+                </div>
+            {% endif %}
+
             <div class="form-group-custom">
                 <label>Workshop Type</label>
                 {{ form.workshop_type }}
+                {% for error in form.workshop_type.errors %}
+                    <small style="color: #ff5252; font-weight: 600;">{{ error }}</small>
+                {% endfor %}
             </div>
 
             <div class="form-group-custom">
                 <label>Preferred Workshop Date</label>
                 {{ form.date }}
+                {% for error in form.date.errors %}
+                    <small style="color: #ff5252; font-weight: 600;">{{ error }}</small>
+                {% endfor %}
             </div>
 
-            <div style="display: none;">
-                {{ form.tnc_accepted }}
-            </div>
-
-            <button type="submit" class="btn-submit-purple">Submit Proposal</button>
+            <button class="btn-submit-purple" type="submit">Submit Proposal</button>
         </form>
     </div>
 </div>
-
-<script>
-    // Automate T&C acceptance if hidden to match simplified screenshot UX
-    document.querySelector('form').onsubmit = function() {
-        if(document.querySelector('input[name="tnc_accepted"]')) {
-            document.querySelector('input[name="tnc_accepted"]').checked = true;
-        }
-    };
-</script>
 {% endblock %}

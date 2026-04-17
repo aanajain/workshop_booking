@@ -1,111 +1,230 @@
 {% extends 'workshop_app/base.html' %}
 {% load static %}
 
-{% block title %}
-    Add new Workshop type
-{% endblock %}
+{% block title %} Edit Workshop Type {% endblock %}
 
-{% block extra-dependencies %}
-{% endblock %}
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
 
 {% block extra-custom-scripts %}
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script src="{% static 'workshop_app/js/jquery.formset.js' %}"></script>
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        --glass-bg: rgba(15, 15, 30, 0.4);
+        --glass-border: rgba(255, 255, 255, 0.05);
+        --accent-blue: #3b82f6;
+    }
 
-    <script src="{% static 'workshop_app/js/jquery.formset.js' %}"></script>
+    body {
+        margin: 0; padding: 0; font-family: 'Urbanist', sans-serif;
+        background-color: #030308; color: #fff; overflow-x: hidden;
+    }
+    body::before {
+        content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                    #030308;
+        z-index: -1;
+    }
+
+    .page-wrapper { padding: 1.5rem 3rem; position: relative; z-index: 10; min-height: 100vh; display: flex; flex-direction: column; align-items: center;}
+
+    /* Top Navbar */
+    .top-navbar {
+        width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; background: rgba(30, 30, 30, 0.4);
+        backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); padding: 0.8rem 2rem; border-radius: 40px;
+        position: relative; z-index: 999;
+    }
+    .btn-home-pill {
+        background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 30px; padding: 0.6rem 1.8rem; color: #fff; text-decoration: none; font-weight: 600;
+    }
+    .user-pill {
+        background: #5d4037; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px;
+        padding: 0.5rem 1.2rem; display: flex; align-items: center; gap: 10px; cursor: pointer; position: relative; transition: 0.3s;
+    }
+    .user-pill:hover { background: #6d4c41; }
+    .profile-dropdown {
+        position: absolute; top: calc(100% + 10px); right: 0; background: #111111; border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px; min-width: 200px; padding: 0.8rem 0; opacity: 0; visibility: hidden; transform: translateY(-10px);
+        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+    }
+    .user-pill:hover .profile-dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
+    .dropdown-link { display: flex; align-items: center; gap: 12px; padding: 0.8rem 1.5rem; color: #fff; text-decoration: none; font-weight: 500; font-size: 0.95rem; }
+    .dropdown-link:hover { background: rgba(255, 255, 255, 0.05); color: #fff; text-decoration: none; }
+    .dropdown-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 0.5rem 0; }
+    .dropdown-logout { color: #ff5252 !important; }
+    .dropdown-logout i { color: #ff5252 !important; }
+
+    /* Glass Cards */
+    .glass-card {
+        background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border); border-radius: 30px; padding: 3rem; width: 100%; max-width: 900px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); margin-bottom: 2rem;
+    }
+
+    .main-title {
+        font-size: 2.8rem; font-weight: 800; margin-bottom: 2rem; text-align: center;
+        background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    /* Form Fields */
+    .form-group-custom { margin-bottom: 1.8rem; }
+    .form-group-custom label { display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.8rem; color: #fff; }
+    
+    .input-glass {
+        width: 100%; background: rgba(255, 255, 255, 0.02); border: 1.5px solid rgba(255, 255, 255, 0.1);
+        border-radius: 25px; color: #fff; padding: 0.8rem 1.5rem; font-size: 1rem; transition: 0.3s; box-sizing: border-box;
+    }
+    textarea.input-glass { border-radius: 20px; min-height: 120px; }
+    .input-glass:focus { border-color: #6366f1; background: rgba(255, 255, 255, 0.05); outline: none; box-shadow: 0 0 15px rgba(99, 102, 241, 0.2); }
+    
+    .help-text { font-size: 0.85rem; color: rgba(255, 255, 255, 0.5); margin-top: 6px; }
+    .error-msg { color: #ff5252; font-size: 0.85rem; margin-top: 5px; font-weight: 600; }
+
+    /* Buttons */
+    .btn-submit-purple {
+        background: var(--primary-gradient); border: none; border-radius: 30px;
+        color: #fff; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s;
+        box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3); padding: 1rem 3rem; margin-top: 1rem; float: right;
+    }
+    .btn-submit-purple:hover { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(124, 58, 237, 0.5); }
+    
+    .btn-cancel-glass {
+        background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 30px; color: #fff; font-weight: 700; padding: 1rem 3rem; transition: 0.3s;
+        margin-top: 1rem; display: inline-block; text-align: center; text-decoration: none;
+    }
+    .btn-cancel-glass:hover { background: rgba(255, 255, 255, 0.1); color: #fff; text-decoration: none; }
+
+    .btn-delete-red {
+        background: #ff4757; border: none; border-radius: 15px; color: #fff; padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 700; cursor: pointer; float: right;
+    }
+    
+    .add-row-btn {
+        background: rgba(99, 102, 241, 0.1); border: 1px dashed #6366f1; border-radius: 20px; color: #6366f1; padding: 0.8rem 2rem; font-weight: 700; text-decoration: none; display: inline-block; margin-top: 1rem; transition: 0.3s;
+    }
+    .add-row-btn:hover { background: rgba(99, 102, 241, 0.2); text-decoration: none; }
+
+</style>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var inputs = document.querySelectorAll('input[type="text"], input[type="number"], textarea, input[type="file"]');
+        inputs.forEach(function(input) {
+            input.classList.add('input-glass');
+        });
+        
+        $(".inline.{{ form_file.prefix }}").formset({
+            prefix: "{{ form_file.prefix }}",
+            addCssClass: "add-row-btn",
+            deleteCssClass: "hidden",
+            addText: 'Add another attachment',
+            deleteText: '',
+            formCssClass: 'inline-form'
+        });
+    });
+</script>
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <h2 class="text-center m-2">View / Edit Workshop Type</h2>
-        <br>
+<div class="page-wrapper">
+    <nav class="top-navbar">
+        <a href="{% url 'workshop_app:index' %}" class="btn-home-pill">Home</a>
+        <div class="user-pill">
+            <i class="material-icons">account_circle</i>
+            <span style="font-weight: 700;">
+                {% if user.get_full_name %}{{ user.get_full_name|title }}{% else %}{{ user.username|title }}{% endif %}
+            </span>
+            <i class="material-icons">arrow_drop_down</i>
+            <div class="profile-dropdown text-left">
+                <a href="{% url 'workshop_app:view_own_profile' %}" class="dropdown-link">
+                    <i class="material-icons">person</i> Profile
+                </a>
+                <a href="{% url 'password_change' %}" class="dropdown-link">
+                    <i class="material-icons">badge</i> Change Password
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="{% url 'workshop_app:logout' %}" class="dropdown-link dropdown-logout">
+                    <i class="material-icons">logout</i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="glass-card">
+        <h2 class="main-title">Edit Workshop Type</h2>
+        
         <form method="post" enctype="multipart/form-data">
-            <div class="row my-3">
-                <div class="col-3 font-weight-bold">Workshop Name :</div>
-                <div class="col text-left">
-                    <div class="row">
-                        <div class="col">{{ form.name }}</div>
-                    </div>
-                    <div class="row m-1 text-danger">
-                        <div class="col">{{ form.name.errors }}</div>
-                    </div>
-                </div>
-
-            </div>
-            <div class="row my-3">
-                <div class="col-3 font-weight-bold">Duration :</div>
-                <div class="col text-left">
-                    <div class="row">
-                        <div class="col">{{ form.duration }}</div>
-                    </div>
-                    <div class="row m-1 text-muted">
-                        <div class="col">{{ form.duration.help_text }}</div>
-                    </div>
-                    <div class="row m-1 text-danger">
-                        <div class="col">{{ form.duration.errors }}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="row my-3">
-                <div class="col-3 font-weight-bold">Description :</div>
-                <div class="col text-left">
-                    <div class="row">
-                        <div class="col">{{ form.description }}</div>
-                    </div>
-                    <div class="row m-1 text-danger">
-                        <div class="col">{{ form.description.errors }}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="row my-3">
-                <div class="col-3 font-weight-bold">Terms and Conditions :</div>
-                <div class="col text-left">
-                    <div class="row">
-                        <div class="col">{{ form.terms_and_conditions }}</div>
-                    </div>
-                    <div class="row m-1 text-danger">
-                        <div class="col">{{ form.terms_and_conditions.errors }}</div>
-                    </div>
-                </div>
+            {% csrf_token %}
+            
+            <div class="form-group-custom">
+                <label>Workshop Name</label>
+                {{ form.name }}
+                <div class="error-msg">{{ form.name.errors }}</div>
             </div>
 
-            <h2 class="text-center m-2">Attachments</h2>
+            <div class="form-group-custom">
+                <label>Duration (Days)</label>
+                {{ form.duration }}
+                <div class="help-text">{{ form.duration.help_text }}</div>
+                <div class="error-msg">{{ form.duration.errors }}</div>
+            </div>
+
+            <div class="form-group-custom">
+                <label>Description</label>
+                {{ form.description }}
+                <div class="error-msg">{{ form.description.errors }}</div>
+            </div>
+
+            <div class="form-group-custom">
+                <label>Terms and Conditions</label>
+                <div style="background: rgba(255,255,255,0.02); border: 1.5px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 1rem;">
+                    {{ form.terms_and_conditions }}
+                </div>
+                <div class="error-msg">{{ form.terms_and_conditions.errors }}</div>
+            </div>
+
+            <h3 style="margin-top: 3rem; margin-bottom: 2rem; color: #a855f7; font-weight: 700; text-align: center;">Attachments</h3>
+            
             {{ form_file.management_form }}
             {{ form_file.non_form_errors }}
-            {% for form in form_file %}
-                <div class="inline {{ form_file.prefix }} my-4">
-                    <div class="row">
-                        <div class="col-11">
-                            {% for field in form %}
-                                <div class="col-6">{{ field }}</div>
-                            {% endfor %}
+            {% for f_form in form_file %}
+                <div class="inline {{ form_file.prefix }} mb-4" style="background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                    <div class="row align-items-center">
+                        <div class="col-{% if f_form.id.value %}10{% else %}12{% endif %}">
+                            <div class="row">
+                                {% for field in f_form %}
+                                    {% if not field.is_hidden %}
+                                        <div class="col-md-6 mb-3">
+                                            <label style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.4rem; display: block;">{{ field.label }}</label>
+                                            {{ field }}
+                                        </div>
+                                    {% else %}
+                                        {{ field }}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
                         </div>
-                    {% if form.id.value %}
-                    <div class="col-1">
-                        <a href="{% url 'workshop_app:delete_attachment_file' form.id.value %}"><button class="btn btn-md btn-danger float-right" type="button">Delete</button></a>
+                        {% if f_form.id.value %}
+                            <div class="col-2">
+                                <a href="{% url 'workshop_app:delete_attachment_file' f_form.id.value %}" onclick="return confirm('Are you sure?')">
+                                    <button class="btn-delete-red" type="button">Delete</button>
+                                </a>
+                            </div>
+                        {% endif %}
                     </div>
-                    {% endif %}
-                    </div>
-
                 </div>
-                <hr>
             {% endfor %}
-            <div class="row my-3">
-                <div class="col-12">
-                    <button type="submit" class="btn btn-md btn-primary float-right m-3">Save</button>
-                </div>
+
+            <div style="margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem;">
+                <button type="submit" class="btn-submit-purple">Save Changes</button>
+                <a href="{% url 'workshop_app:workshop_type_list' %}" class="btn-cancel-glass">Cancel</a>
+                <div style="clear: both;"></div>
             </div>
         </form>
     </div>
-    <br><br><br><br>
-    <script type="text/javascript">
-        $(function () {
-            $(".inline.{{ form_file.prefix }}").formset({
-                prefix: "{{ form_file.prefix }}", // The form prefix for your django formset
-                addCssClass: "btn btn-md btn-primary bordered inline-form-add", // CSS class applied to the add link
-                deleteCssClass: "hidden", // CSS class applied to the delete link
-                addText: 'Add another attachment', // Text for the add link
-                deleteText: '',
-                formCssClass: 'inline-form' // CSS class applied to each form in a formset
-            })
-        });
-    </script>
+</div>
 {% endblock %}

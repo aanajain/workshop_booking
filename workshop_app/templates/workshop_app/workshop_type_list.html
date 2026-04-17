@@ -210,7 +210,7 @@
         
         <div class="nav-links">
             {% if request.user|has_group:"instructor" %}
-                <a href="{% url 'statistics_app:team_stats' %}" class="nav-link-item">Team Statistics</a>
+                <a href="{% url 'statistics_app:team' %}" class="nav-link-item">Team Statistics</a>
             {% endif %}
             <a href="{% url 'workshop_app:index' %}" class="nav-link-item">Workshop Status</a>
             {% if not request.user|has_group:"instructor" %}
