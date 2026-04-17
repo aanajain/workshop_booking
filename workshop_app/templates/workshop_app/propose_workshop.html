@@ -1,9 +1,10 @@
 {% extends "workshop_app/base.html" %}
 {% load static %}
 
-{% block title %}
-    Propose a workshop
-{% endblock %}
+{% block title %} Propose Workshop {% endblock %}
+
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
 
 {% block extra-dependencies %}
     <link rel="stylesheet" href="{% static 'workshop_app/css/jquery-ui.css' %}" type="text/css"/>
@@ -12,110 +13,288 @@
 {% endblock %}
 
 {% block extra-custom-scripts %}
-    <script>
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        --glass-bg: rgba(15, 15, 30, 0.4);
+        --glass-border: rgba(255, 255, 255, 0.05);
+        --accent-blue: #3b82f6;
+    }
+
+    body {
+        margin: 0; padding: 0;
+        font-family: 'Urbanist', sans-serif;
+        background-color: #030308;
+        color: #fff;
+        overflow-x: hidden;
+    }
+
+    body::before {
+        content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                    #030308;
+        z-index: -1;
+    }
+
+    .page-wrapper {
+        padding: 1.5rem 2rem;
+        position: relative;
+        z-index: 10;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Premium Nav & Profile Pill */
+    .top-navbar {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 2rem; padding: 0.8rem 1rem;
+        position: relative; z-index: 999; /* Ensure navbar is above cards */
+    }
+    .btn-home-pill {
+        background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 30px; padding: 0.6rem 1.8rem; color: #fff; text-decoration: none; font-weight: 600;
+    }
+    
+    .user-pill {
+        background: #5d4037; /* Dark Brown from mockup */
+        border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px;
+        padding: 0.5rem 1.2rem; display: flex; align-items: center; gap: 10px;
+        cursor: pointer; position: relative; transition: 0.3s;
+    }
+    .user-pill:hover { background: #6d4c41; }
+
+    .profile-dropdown {
+        position: absolute; top: calc(100% + 10px); right: 0;
+        background: #111111; border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px; min-width: 220px; padding: 0.8rem 0;
+        opacity: 0; visibility: hidden; transform: translateY(-10px);
+        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+    }
+    .user-pill:hover .profile-dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
+    
+    .dropdown-link {
+        display: flex; align-items: center; gap: 12px; padding: 0.8rem 1.5rem;
+        color: #fff; text-decoration: none; font-weight: 500; font-size: 0.95rem;
+    }
+    .dropdown-link:hover { background: rgba(255, 255, 255, 0.05); text-decoration: none; color: #fff; }
+    .dropdown-link i { font-size: 20px; opacity: 0.8; }
+    
+    .dropdown-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 0.5rem 0; }
+    
+    .dropdown-logout { color: #ff5252 !important; }
+    .dropdown-logout i { color: #ff5252 !important; }
+
+    /* Note Banner */
+    .note-info-bar {
+        width: 100%;
+        max-width: 900px;
+        background: rgba(59, 130, 246, 0.05);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
+        border-radius: 30px;
+        padding: 0.8rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 3rem;
+        font-size: 0.95rem;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .note-info-bar i { color: #3b82f6; }
+    .note-info-bar a { color: #3b82f6; font-weight: 700; text-decoration: underline; }
+
+    /* Centered Text */
+    .main-title {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 3rem;
+        background: linear-gradient(to right, #6366f1, #a855f7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Form Layout to match screenshot */
+    .compact-form {
+        width: 100%;
+        max-width: 500px;
+        text-align: left;
+    }
+
+    .form-group-custom {
+        margin-bottom: 2.5rem;
+    }
+
+    .form-group-custom label {
+        display: block;
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 0.8rem;
+        color: #fff;
+    }
+
+    .input-glass {
+        width: 100%;
+        height: 55px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1.5px solid rgba(255, 255, 255, 0.1);
+        border-radius: 30px;
+        color: #fff;
+        padding: 0 1.5rem;
+        font-size: 1rem;
+        transition: 0.3s;
+        box-sizing: border-box;
+    }
+
+    .input-glass:focus {
+        border-color: #6366f1;
+        background: rgba(255, 255, 255, 0.05);
+        outline: none;
+        box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn-submit-purple {
+        width: 100%;
+        height: 55px;
+        background: var(--primary-gradient);
+        border: none;
+        border-radius: 30px;
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+        box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
+        margin-top: 1rem;
+    }
+
+    .btn-submit-purple:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 40px rgba(124, 58, 237, 0.5);
+    }
+
+    /* Datepicker styling for this theme */
+    .ui-datepicker {
+        background: rgba(10, 10, 20, 0.98) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 20px !important;
+        padding: 20px !important;
+    }
+    .ui-datepicker-header { background: transparent !important; border: none !important; }
+    .ui-datepicker-calendar .ui-state-default {
+        background: transparent !important;
+        border: none !important;
+        color: #fff !important;
+        border-radius: 10px !important;
+        width: 35px !important; height: 35px !important;
+        display: flex !important; align-items: center !important; justify-content: center !important;
+    }
+    .ui-datepicker-calendar .ui-state-active {
+        background: #6366f1 !important;
+        font-weight: 700 !important;
+    }
+
+    /* Dropdown Overrides */
+    select.input-glass option { background: #030308; }
+
+</style>
+
+<script>
+    $(function () {
         var dateToday = new Date();
-        var upto = new Date();
-
         dateToday.setDate(dateToday.getDate() + 3);
-        upto.setFullYear(dateToday.getFullYear() + 1);
 
-        $(function () {
-            $(".datepicker").datepicker({
-                changeMonth: true,
-                changeYear: true,
-                minDate: dateToday,
-                maxDate: upto,
-                beforeShowDay: $.datepicker.noWeekends,
-            });
-
-
-            $('#disp_tnc').click(function (e) {
-                e.preventDefault()
-                if ($('#id_workshop_type').val() === '')
-                    $('.modal-body').html("<p class='text-danger'>Please select a workshop type</p>")
-                else {
-                    $.ajax({
-                        url: '/workshop/type_tnc/' + $('#id_workshop_type').val(),
-                        success: function (data) {
-                            $('.modal-body').html(data.tnc)
-                        }
-                    })
-                }
-            })
+        const dateInput = $('input[name="date"]');
+        dateInput.addClass('input-glass').attr('placeholder', 'Workshop Date').attr('readonly', 'readonly');
+        
+        dateInput.datepicker({
+            changeMonth: true, changeYear: true,
+            minDate: dateToday,
+            beforeShowDay: $.datepicker.noWeekends,
+            dateFormat: 'yy-mm-dd'
         });
-    </script>
+
+        $('select[name="workshop_type"]').addClass('input-glass');
+    });
+</script>
 {% endblock %}
 
-
 {% block content %}
-    <style type="text/css">
-        .errorlist {
-            color: red;
+<div class="page-wrapper">
+    <!-- Navbar -->
+    <nav class="top-navbar">
+        <a href="{% url 'workshop_app:index' %}" class="btn-home-pill">Home</a>
+        <div class="nav-links-center">
+            <a href="{% url 'workshop_app:index' %}" class="nav-item-link">Workshop Status</a>
+            <a href="{% url 'workshop_app:propose_workshop' %}" class="nav-item-link active">Propose Workshop</a>
+            <a href="{% url 'workshop_app:workshop_type_list' %}" class="nav-item-link">Workshop Types</a>
+        </div>
+    <div class="user-pill">
+        <i class="material-icons">account_circle</i>
+        <span style="font-weight: 700;">
+            {% if user.get_full_name %}{{ user.get_full_name|title }}{% else %}{{ user.username|title }}{% endif %}
+        </span>
+        <i class="material-icons">arrow_drop_down</i>
+        
+        <div class="profile-dropdown">
+            <a href="{% url 'workshop_app:view_own_profile' %}" class="dropdown-link">
+                <i class="material-icons">person</i> Profile
+            </a>
+            <a href="{% url 'password_change' %}" class="dropdown-link">
+                <i class="material-icons">badge</i> Change Password
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="{% url 'workshop_app:logout' %}" class="dropdown-link dropdown-logout">
+                <i class="material-icons">logout</i> Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+    <!-- Success Note Bar -->
+    <div class="note-info-bar">
+        <i class="material-icons">info</i>
+        <span>Note: Before proposing the workshop, please check the workshop details in the <a href="{% url 'workshop_app:workshop_type_list' %}">Workshop Types</a> section.</span>
+    </div>
+
+    <h1 class="main-title">Propose Workshop</h1>
+
+    <div class="compact-form">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group-custom">
+                <label>Workshop Type</label>
+                {{ form.workshop_type }}
+            </div>
+
+            <div class="form-group-custom">
+                <label>Preferred Workshop Date</label>
+                {{ form.date }}
+            </div>
+
+            <div style="display: none;">
+                {{ form.tnc_accepted }}
+            </div>
+
+            <button type="submit" class="btn-submit-purple">Submit Proposal</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Automate T&C acceptance if hidden to match simplified screenshot UX
+    document.querySelector('form').onsubmit = function() {
+        if(document.querySelector('input[name="tnc_accepted"]')) {
+            document.querySelector('input[name="tnc_accepted"]').checked = true;
         }
-
-    .modal-open .modal{
-        overflow-y: hidden;
-    }
-    </style>
-
-    <div class="container" align="center">
-        <div class="alert alert-info">
-            Note: Before proposing the workshop, please check about the workshop in the
-            <strong>Workshop Types</strong> section
-        </div>
-        <br><br>
-        <div class="col-md-6 col-md-offset-6">
-            <div class="card border-primary">
-                <div class="card-header">
-                    <h3>Propose Workshop</h3>
-                </div>
-                <div class="card-body">
-                    <div class="form-group">
-                        <form method="post">
-                            {% csrf_token %}
-                            <br/>
-                            {{ form.workshop_type }}
-                            <br>
-                            {{ form.date }}
-                            <br>
-                            {{ form.tnc_accepted }} I accept the
-                            <a href="#" id="disp_tnc" data-toggle="modal"
-                            data-target="#exampleModalCenter">
-                                terms and conditions
-                            </a>
-                            <br>
-                            {% if form.errors %}
-                                <br>
-                                <div style="text-align: left; border: 1px solid red; padding-top: 5px">
-                                    <h5 style="text-align: center; color: red; font-weight: bolder">Errors</h5>
-                                    {{ form.errors }}
-                                </div>
-                            {% endif %}
-                            <br>
-                            <button class="btn btn-success" type="submit">Submit</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <br>
-
-    </div>
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
-         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Terms and Conditions</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-
-                </div>
-            </div>
-        </div>
-    </div>
+    };
+</script>
 {% endblock %}

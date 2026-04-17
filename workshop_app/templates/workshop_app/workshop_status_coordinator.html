@@ -10,62 +10,27 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
     :root {
-        --primary-color: #FF9500;
-        --secondary-color: #FFFBF6;
-        --glass-bg: rgba(18, 18, 18, 0.7);
-        --glass-border: rgba(255, 149, 0, 0.15);
-        --accent-blue: #0984e3;
-        --accent-green: #00cec9;
-        --accent-yellow: #f1c40f;
+        --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        --glass-bg: rgba(15, 15, 30, 0.4);
+        --glass-border: rgba(255, 255, 255, 0.05);
+        --accent-blue: #3b82f6;
     }
 
     body {
-        margin: 0;
-        padding: 0;
+        margin: 0; padding: 0;
         font-family: 'Urbanist', sans-serif;
-        background-color: #0b0b0b;
-        color: var(--secondary-color);
+        background-color: #030308;
+        color: #fff;
         overflow-x: hidden;
     }
 
-    /* Aurora Background */
+    /* Aurora Background Effect */
     body::before {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(circle at 10% 20%, rgba(255, 149, 0, 0.1) 0%, transparent 40%),
-                    radial-gradient(circle at 90% 80%, rgba(255, 120, 0, 0.1) 0%, transparent 40%),
-                    radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 0%, #050505 100%);
+        content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                    #030308;
         z-index: -1;
-    }
-
-    .aurora-bg {
-        position: fixed;
-        top: 0; left: 0; width: 100vw; height: 100vh;
-        z-index: -2; overflow: hidden;
-    }
-
-    .aurora-blob {
-        position: absolute;
-        filter: blur(80px);
-        border-radius: 50%;
-        opacity: 0.6;
-        animation: float-blob 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
-        will-change: transform;
-    }
-
-    .aurora-blob-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(255, 149, 0, 0.15) 0%, transparent 70%); top: -10%; left: -10%; }
-    .aurora-blob-2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(162, 155, 254, 0.15) 0%, transparent 70%); bottom: -10%; right: -10%; animation-duration: 30s; }
-    .aurora-blob-3 { width: 700px; height: 700px; background: radial-gradient(circle, rgba(116, 185, 255, 0.1) 0%, transparent 70%); top: 20%; left: 30%; animation-duration: 35s; }
-
-    @keyframes float-blob {
-        0% { transform: translate(0, 0) scale(1); }
-        33% { transform: translate(15%, -10%) scale(1.1); }
-        66% { transform: translate(-10%, 15%) scale(0.9); }
-        100% { transform: translate(10%, 20%) scale(1.05); }
     }
 
     .page-wrapper {
@@ -86,6 +51,8 @@
         border: 1px solid rgba(255, 255, 255, 0.05);
         padding: 0.8rem 2rem;
         border-radius: 40px;
+        position: relative;
+        z-index: 999; /* Higher than card */
     }
 
     .nav-brand {
@@ -122,15 +89,28 @@
         background: rgba(255, 255, 255, 0.1);
     }
 
-    .user-profile {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        background: rgba(255, 149, 0, 0.15);
-        padding: 0.5rem 1.2rem;
-        border-radius: 30px;
-        border: 1px solid rgba(255, 149, 0, 0.2);
+    .user-pill {
+        background: #5d4037; /* Brown from mockup */
+        border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px;
+        padding: 0.5rem 1.2rem; display: flex; align-items: center; gap: 10px;
+        cursor: pointer; position: relative; transition: 0.3s;
     }
+    .user-pill:hover { background: #6d4c41; }
+
+    .profile-dropdown {
+        position: absolute; top: calc(100% + 10px); right: 0;
+        background: #111111; border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px; min-width: 200px; padding: 0.8rem 0;
+        opacity: 0; visibility: hidden; transform: translateY(-10px);
+        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+    }
+    .user-pill:hover .profile-dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
+    .dropdown-link { display: flex; align-items: center; gap: 12px; padding: 0.8rem 1.5rem; color: #fff; text-decoration: none; font-weight: 500; font-size: 0.95rem; }
+    .dropdown-link:hover { background: rgba(255, 255, 255, 0.05); color: #fff; text-decoration: none; }
+    .dropdown-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 0.5rem 0; }
+    .dropdown-logout { color: #ff5252 !important; }
+    .dropdown-logout i { color: #ff5252 !important; }
 
     /* Glass Cards */
     .glass-card {
@@ -146,11 +126,12 @@
 
     .welcome-title {
         font-size: 2.8rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        background: linear-gradient(135deg, #fff, rgba(255, 255, 255, 0.5));
+        font-weight: 800;
+        margin-bottom: 3rem;
+        background: linear-gradient(to right, #6366f1, #a855f7);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        text-align: center;
     }
 
     .welcome-sub {
@@ -179,18 +160,20 @@
     .table-glass th {
         text-align: left;
         padding: 1.2rem;
-        color: var(--accent-green);
+        color: #3b82f6;
         text-transform: uppercase;
         font-size: 0.75rem;
+        font-weight: 800;
         letter-spacing: 1.5px;
-        border-bottom: 2px solid rgba(0, 206, 201, 0.15);
+        border-bottom: 2px solid rgba(59, 130, 246, 0.2);
     }
 
     .table-glass td {
         padding: 1.2rem;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.85);
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 600;
     }
 
     .table-glass tbody tr:hover {
@@ -198,14 +181,13 @@
     }
 
     .table-glass a {
-        color: #fff;
+        color: #6366f1;
         text-decoration: none;
-        font-weight: 600;
         transition: color 0.3s;
     }
 
     .table-glass a:hover {
-        color: var(--primary-color);
+        color: #a855f7;
     }
 
     /* Badges */
@@ -257,12 +239,6 @@
 {% endblock %}
 
 {% block content %}
-<div class="aurora-bg">
-    <div class="aurora-blob aurora-blob-1"></div>
-    <div class="aurora-blob aurora-blob-2"></div>
-    <div class="aurora-blob aurora-blob-3"></div>
-</div>
-
 <div class="page-wrapper">
     <!-- Premium Top Navbar -->
     <nav class="top-navbar">
@@ -275,9 +251,26 @@
             <a href="{% url 'workshop_app:propose_workshop' %}" class="nav-link-item">Propose Workshop</a>
             <a href="{% url 'workshop_app:workshop_type_list' %}" class="nav-link-item">Workshop Types</a>
         </div>
-        <div class="user-profile">
+        <!-- Refined User Pell Dropdown -->
+        <div class="user-pill">
             <i class="material-icons">account_circle</i>
-            <span style="font-weight: 600;">{{user.get_full_name|title}}</span>
+            <span style="font-weight: 700;">
+                {% if user.get_full_name %}{{ user.get_full_name|title }}{% else %}{{ user.username|title }}{% endif %}
+            </span>
+            <i class="material-icons">arrow_drop_down</i>
+            
+            <div class="profile-dropdown text-left">
+                <a href="{% url 'workshop_app:view_own_profile' %}" class="dropdown-link">
+                    <i class="material-icons">person</i> Profile
+                </a>
+                <a href="{% url 'password_change' %}" class="dropdown-link">
+                    <i class="material-icons">badge</i> Change Password
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="{% url 'workshop_app:logout' %}" class="dropdown-link dropdown-logout">
+                    <i class="material-icons">logout</i> Logout
+                </a>
+            </div>
         </div>
     </nav>
 

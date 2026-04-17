@@ -1,18 +1,166 @@
-{% extends 'workshop_app/base.html' %}
+{% extends "workshop_app/base.html" %}
+{% load static %}
 
-	{% block title %}
-		Logged out
-	{% endblock %}
+{% block title %} Logged Out {% endblock %}
 
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
 
-	{% block content %}
-		<div class="container" align="center">
-			<br>
-			<h3>You have logged out successfully.</h3>
-			<h4>If you want to login again please
-				<a href="/">click here</a>
-			</h4>
-			<br>
-		</div>
+{% block extra-dependencies %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+{% endblock %}
 
-	{% endblock %}
+{% block extra-custom-scripts %}
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+    :root {
+        --primary-color: #FF9500;
+        --secondary-color: #FFFBF6;
+        --glass-bg: rgba(18, 18, 18, 0.7);
+        --glass-border: rgba(255, 149, 0, 0.15);
+    }
+
+    body {
+        margin: 0; padding: 0; font-family: 'Urbanist', sans-serif;
+        background-color: #0b0b0b; color: var(--secondary-color); overflow-x: hidden;
+    }
+    body::before {
+        content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(circle at 10% 20%, rgba(255, 149, 0, 0.1) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(255, 120, 0, 0.1) 0%, transparent 40%),
+                    radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 0%, #050505 100%);
+        z-index: -1;
+    }
+    .aurora-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; overflow: hidden; }
+    .aurora-blob { position: absolute; filter: blur(80px); border-radius: 50%; opacity: 0.6; animation: float-blob 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; }
+    .aurora-blob-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(255, 149, 0, 0.15) 0%, transparent 70%); top: -10%; left: -10%; }
+    .aurora-blob-2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(162, 155, 254, 0.15) 0%, transparent 70%); bottom: -10%; right: -10%; animation-duration: 30s; }
+
+    @keyframes float-blob {
+        0% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(15%, -10%) scale(1.1); }
+        66% { transform: translate(-10%, 15%) scale(0.9); }
+        100% { transform: translate(10%, 20%) scale(1.05); }
+    }
+
+    .page-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        z-index: 10;
+        position: relative;
+    }
+
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border);
+        border-radius: 30px;
+        padding: 4rem 3rem;
+        text-align: center;
+        max-width: 500px;
+        width: 100%;
+        box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+        animation: card-appear 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes card-appear {
+        from { opacity: 0; transform: translateY(30px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .logout-icon {
+        font-size: 5rem;
+        color: var(--primary-color);
+        margin-bottom: 2rem;
+        background: rgba(255, 149, 0, 0.1);
+        width: 120px;
+        height: 120px;
+        line-height: 120px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .logout-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #fff, rgba(255,255,255,0.6));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .logout-text {
+        font-size: 1.1rem;
+        color: rgba(255,255,255,0.6);
+        margin-bottom: 3rem;
+        line-height: 1.6;
+    }
+
+    .btn-login-again {
+        display: inline-block;
+        background: var(--primary-color);
+        color: #000;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1.1rem;
+        padding: 1rem 3rem;
+        border-radius: 40px;
+        transition: all 0.3s;
+        box-shadow: 0 10px 30px rgba(255, 149, 0, 0.3);
+    }
+
+    .btn-login-again:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(255, 149, 0, 0.5);
+        color: #000;
+        text-decoration: none;
+    }
+
+</style>
+
+<script>
+    window.onload = function() {
+        Toastify({
+            text: "Successfully Logged Out",
+            duration: 4000,
+            gravity: "top", // `top` or `bottom`
+            position: "center", // `left`, `center` or `right`
+            stopOnFocus: true, // Prevents dismissing of toast on hover
+            style: {
+                background: "rgba(255, 149, 0, 0.9)",
+                color: "#000",
+                fontWeight: "700",
+                borderRadius: "12px",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(255,255,255,0.2)",
+                fontFamily: "Urbanist, sans-serif"
+            },
+            onClick: function(){} // Callback after click
+        }).showToast();
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="aurora-bg">
+    <div class="aurora-blob aurora-blob-1"></div>
+    <div class="aurora-blob aurora-blob-2"></div>
+</div>
+
+<div class="page-wrapper">
+    <div class="glass-card">
+        <div class="logout-icon">
+            <i class="material-icons" style="font-size: inherit; vertical-align: middle;">door_front</i>
+        </div>
+        <h1 class="logout-title">See You Soon</h1>
+        <p class="logout-text">You have been safely logged out of the FOSSEE Workshop Portal. We can't wait to see you again!</p>
+        
+        <a href="{% url 'workshop_app:login' %}" class="btn-login-again">Login Again</a>
+    </div>
+</div>
+{% endblock %}

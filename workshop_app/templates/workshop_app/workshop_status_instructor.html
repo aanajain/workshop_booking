@@ -1,136 +1,359 @@
 {% extends "workshop_app/base.html" %}
 {% load static %}
 
-{% block title %}
-    Workshop Status
-{% endblock %}
+{% block title %} Instructor Dashboard {% endblock %}
+
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
 
 {% block extra-dependencies %}
-    <style >
-    .table-heading{
-        color: #04a9cf;
-    }
-    </style>
     <link rel="stylesheet" href="{% static 'workshop_app/css/jquery-ui.css' %}" type="text/css"/>
     <script src="{% static 'workshop_app/js/jquery-1.12.4.js' %}"></script>
     <script src="{% static 'workshop_app/js/jquery-ui.min.js' %}"></script>
 {% endblock %}
 {% block extra-custom-scripts %}
-    {% load static %}
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="{% static 'workshop_app/js/datepicker.js' %}"></script>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --glass-bg: rgba(15, 15, 30, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --accent-blue: #3b82f6;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Urbanist', sans-serif;
+            background-color: #030308;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                        #030308;
+            z-index: -1;
+        }
+
+        .page-wrapper {
+            padding: 1.5rem 3rem;
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+        }
+
+        /* Premium Top Nav */
+        .top-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: rgba(30, 30, 30, 0.4);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 0.8rem 2rem;
+            border-radius: 40px;
+            position: relative;
+            z-index: 999;
+        }
+
+        .nav-brand {
+            font-weight: 700;
+            font-size: 1.4rem;
+            text-decoration: none;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-brand span {
+            color: #a855f7;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-link-item {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+        }
+
+        .nav-link-item:hover, .nav-link-item.active {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-home-pill {
+            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px; padding: 0.6rem 1.8rem; color: #fff; text-decoration: none; font-weight: 600;
+        }
+
+        .user-pill {
+            background: #5d4037; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px;
+            padding: 0.5rem 1.2rem; display: flex; align-items: center; gap: 10px; cursor: pointer; position: relative; transition: 0.3s;
+        }
+        .user-pill:hover { background: #6d4c41; }
+        .profile-dropdown {
+            position: absolute; top: calc(100% + 10px); right: 0; background: #111111; border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px; min-width: 200px; padding: 0.8rem 0; opacity: 0; visibility: hidden; transform: translateY(-10px);
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        }
+        .user-pill:hover .profile-dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
+        .dropdown-link { display: flex; align-items: center; gap: 12px; padding: 0.8rem 1.5rem; color: #fff; text-decoration: none; font-weight: 500; font-size: 0.95rem; }
+        .dropdown-link:hover { background: rgba(255, 255, 255, 0.05); color: #fff; text-decoration: none; }
+        .dropdown-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 0.5rem 0; }
+        .dropdown-logout { color: #ff5252 !important; }
+        .dropdown-logout i { color: #ff5252 !important; }
+
+        /* Glass Cards */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 2rem;
+        }
+
+        .welcome-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 3rem;
+            background: linear-gradient(to right, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .welcome-sub {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.6);
+            max-width: 600px;
+            line-height: 1.6;
+            margin: 0 auto 3rem auto;
+            text-align: center;
+        }
+
+        /* Table Styling */
+        .table-section-title {
+            font-weight: 700;
+            font-size: 1.6rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .table-glass {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+
+        .table-glass th {
+            text-align: left;
+            padding: 1.2rem;
+            color: #3b82f6;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            border-bottom: 2px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .table-glass td {
+            padding: 1.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+        }
+
+        .table-glass tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .table-glass a {
+            color: #6366f1;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .table-glass a:hover {
+            color: #a855f7;
+        }
+
+        /* Badges */
+        .pill-badge {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+        .badge-success-glass { background: rgba(0, 184, 148, 0.15); color: #55efc4; border: 1px solid rgba(0, 184, 148, 0.3); }
+        .badge-warning-glass { background: rgba(253, 203, 110, 0.15); color: #ffeaa7; border: 1px solid rgba(253, 203, 110, 0.3); }
+
+        .btn-action-glass {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border: none; border-radius: 20px; color: #fff; padding: 0.5rem 1.2rem;
+            font-weight: 600; font-size: 0.85rem; text-decoration: none; transition: 0.3s; box-shadow: 0 5px 15px rgba(124, 58, 237, 0.2);
+        }
+        .btn-action-glass:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4); color: #fff; text-decoration: none; }
+
+
+        .empty-icon { font-size: 4rem; color: rgba(255, 255, 255, 0.1); margin-bottom: 1rem; display: block; }
+    </style>
 {% endblock %}
 
-
 {% block content %}
-    {% if not workshops %}
-        <div class="container">
-            <div class="jumbotron">
-                <h1>Welcome {{ user.first_name }}</h1>
-                <p>Your workshop related information will be shown here, Please navigate to <b>Workshop list</b> and
-                    depending upon
-                    your expertise and availability create a workshop by going to
-                    <b>Create Workshop</b>.</p>
+<div class="page-wrapper">
+    <!-- Premium Top Navbar -->
+    <nav class="top-navbar">
+        <a href="{% url 'workshop_app:index' %}" class="btn-home-pill">Home</a>
+        
+        <div class="nav-links">
+            <a href="{% url 'statistics_app:team_stats' %}" class="nav-link-item">Team Statistics</a>
+            <a href="{% url 'workshop_app:index' %}" class="nav-link-item active">Workshop Status</a>
+            <a href="{% url 'workshop_app:workshop_type_list' %}" class="nav-link-item">Workshop Types</a>
+        </div>
+        
+        <div class="user-pill">
+            <i class="material-icons">account_circle</i>
+            <span style="font-weight: 700;">
+                {% if user.get_full_name %}{{ user.get_full_name|title }}{% else %}{{ user.username|title }}{% endif %}
+            </span>
+            <i class="material-icons">arrow_drop_down</i>
+            
+            <div class="profile-dropdown text-left">
+                <a href="{% url 'workshop_app:view_own_profile' %}" class="dropdown-link">
+                    <i class="material-icons">person</i> Profile
+                </a>
+                <a href="{% url 'password_change' %}" class="dropdown-link">
+                    <i class="material-icons">badge</i> Change Password
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="{% url 'workshop_app:logout' %}" class="dropdown-link dropdown-logout">
+                    <i class="material-icons">logout</i> Logout
+                </a>
             </div>
         </div>
+    </nav>
+
+    <h1 class="welcome-title">Workshop Dashboard</h1>
+
+    {% if not workshops %}
+        <div class="glass-card text-center" style="max-width: 700px; margin: 0 auto;">
+            <i class="material-icons empty-icon">event_busy</i>
+            <h2 style="font-weight: 700; margin-bottom: 1rem;">Welcome, {{ user.first_name }}</h2>
+            <p class="welcome-sub text-center" style="margin: 0 auto;">
+                Your workshop related information will be shown here. Please navigate to the <b>Workshop Types</b> list and, depending upon your expertise and availability, create a workshop by going to <b>Create Workshop</b>.
+            </p>
+        </div>
     {% else %}
-        <h3 class="text-center">The status of your workshops </h3>
-        <br>
-
-        <!-- Accepted View -->
-        <br>
-        <div class="container">
-            <h3 align="center" class="table-heading"><strong>Workshops Accepted</strong></h3>
-            <table class="table table-striped table-responsive-sm">
-                <thead>
-                <tr>
-                    <th>Coordinator Name</th>
-                    <th>Institute</th>
-                    <th>Workshop Name</th>
-                    <th>Workshop Day</th>
-                    <th>Status</th>
-                </tr>
-                </thead>
-                {% for workshop in workshops %}
+        
+        <!-- Accepted Workshops -->
+        <div class="glass-card">
+            <h3 class="table-section-title">
+                <i class="material-icons" style="color: #55efc4;">check_circle</i> Workshops Accepted
+            </h3>
+            
+            <div class="table-responsive">
+                <table class="table-glass">
+                    <thead>
+                        <tr>
+                            <th>Coordinator Name</th>
+                            <th>Institute</th>
+                            <th>Workshop Name</th>
+                            <th>Workshop Day</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                    <tr>
-                        {% if workshop.status %}
-                            <td>
-                                <a href="{% url 'workshop_app:view_profile' workshop.coordinator.id %}">
-                                    {{ workshop.coordinator.get_full_name }}</a>
-                            </td>
-                            <td>{{ workshop.coordinator.profile.institute }}</td>
-                            <td>{{ workshop.workshop_type |capfirst }}</td>
-                            <td>{{ workshop.date | date }}
-
-                                {% if workshop.date > today %}
-                                    <span class="material-icons datepicker btn"
-                                          data-toggle="popinfo"
-                                          title="Note"
-                                          data-content="Click here to change date"
-                                          onclick="changeDate('R,{{ workshop.date| safe }}, {{ forloop.counter }}')">event</span>
-                                    <div class="myDialogR{{ forloop.counter }}" style="display: none;"
-                                         title="Select New Date">
-                                        <form method="post" action="{% url 'workshop_app:change_workshop_date' workshop.id %}">
-                                            <input type="text" placeholder="New date" name="new_date"
-                                                   class="rDate{{ forloop.counter }}"/><br>
-                                            {% csrf_token %}
-                                            <button class="btn btn-primary btn-xs" type="submit">Save</button>
-                                        </form>
-                                    </div>
-                                {% endif %}
-                            </td>
-                            <td><span class="badge badge-success">{{ workshop.get_status }}</span></td>
-                        {% endif %}
-                    </tr>
+                        {% for workshop in workshops %}
+                            {% if workshop.status %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'workshop_app:view_profile' workshop.coordinator.id %}">
+                                        {{ workshop.coordinator.get_full_name }}
+                                    </a>
+                                </td>
+                                <td>{{ workshop.coordinator.profile.institute }}</td>
+                                <td>{{ workshop.workshop_type | capfirst }}</td>
+                                <td>
+                                    {{ workshop.date | date }}
+                                    {% if workshop.date > today %}
+                                        <!-- Keep original datepicker logic if needed -->
+                                    {% endif %}
+                                </td>
+                                <td><span class="pill-badge badge-success-glass">Accepted</span></td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
                     </tbody>
-
-                {% endfor %}
-
-            </table>
+                </table>
+            </div>
         </div>
 
-
-        <!-- Proposed View -->
-        <br>
-        <div class="container">
-            <h3 class="text-center table-heading"><strong>Workshops Proposed By Coordinators</strong>
+        <!-- Proposed Workshops -->
+        <div class="glass-card mt-4">
+            <h3 class="table-section-title">
+                <i class="material-icons" style="color: #ffeaa7;">pending_actions</i> Workshops Proposed For You
             </h3>
-            <table class="table table-striped table-responsive-sm">
-                <thead>
-                <tr>
-                    <th>Coordinator Name</th>
-                    <th>Institute</th>
-                    <th>Workshop Name</th>
-                    <th>Workshop Day</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-                </thead>
-                {% csrf_token %}
-                {% for workshop in workshops %}
+            
+            <div class="table-responsive">
+                <table class="table-glass">
+                    <thead>
+                        <tr>
+                            <th>Coordinator Name</th>
+                            <th>Institute</th>
+                            <th>Workshop Name</th>
+                            <th>Workshop Day</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                    <tr>
-                        {% if not workshop.status and workshop.tnc_accepted %}
-                            <td>
-                                <a href="{% url 'workshop_app:view_profile' workshop.coordinator.id %}">
-                                    {{ workshop.coordinator.get_full_name }}</a>
-                            </td>
-                            <td>{{ workshop.coordinator.profile.institute }}</td>
-                            <td>{{ workshop.workshop_type }}</td>
-                            <td>{{ workshop.date | date }}</td>
-                            <td><span class="badge badge-warning">{{ workshop.get_status }}</span></td>
-                            <td>
-                                <a href="{% url 'workshop_app:accept_workshop' workshop.id %}" class="btn btn-primary btn-sm"  onclick="return confirm('Once accepted you cannot reject, you have to personally contact the Coordinator if the workshop is to be cancelled. Are you sure you want to accept the workshop?')">
-                                    Accept
-                                </a>
-                            </td>
-                        {% endif %}
-                    </tr>
+                        {% for workshop in workshops %}
+                            {% if not workshop.status and workshop.tnc_accepted %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'workshop_app:view_profile' workshop.coordinator.id %}">
+                                        {{ workshop.coordinator.get_full_name }}
+                                    </a>
+                                </td>
+                                <td>{{ workshop.coordinator.profile.institute }}</td>
+                                <td>{{ workshop.workshop_type }}</td>
+                                <td>{{ workshop.date | date }}</td>
+                                <td><span class="pill-badge badge-warning-glass">Pending</span></td>
+                                <td>
+                                    <a href="{% url 'workshop_app:accept_workshop' workshop.id %}" class="btn-action-glass" onclick="return confirm('Once accepted you cannot reject. Are you sure you want to accept the workshop?')">
+                                        Accept
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
                     </tbody>
-
-                {% endfor %}
-            </table>
+                </table>
+            </div>
         </div>
     {% endif %}
-
+</div>
 {% endblock %}

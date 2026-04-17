@@ -37,37 +37,52 @@ def is_email_checked(user):
 def workshop_public_stats(request):
     user = request.user
     form = FilterForm()
+    
+    # Get parameters
     from_date = request.GET.get('from_date')
     to_date = request.GET.get('to_date')
     state = request.GET.get('state')
     workshoptype = request.GET.get('workshop_type')
     show_workshops = request.GET.get('show_workshops')
-    sort = request.GET.get('sort')
+    sort = request.GET.get('sort', '-date')  # Default to Latest
     download = request.GET.get('download')
 
-    if from_date and to_date:
-        form = FilterForm(
-            start=from_date, end=to_date, state=state, type=workshoptype,
-            show_workshops=show_workshops, sort=sort
-        )
-        workshops = Workshop.objects.filter(
-            date__range=(from_date, to_date), status=1
-        ).order_by(sort)
-        if state:
-            workshops = workshops.filter(coordinator__profile__state=state)
-        if workshoptype:
-            workshops = workshops.filter(workshop_type_id=workshoptype)
-    else:
-        today = timezone.now()
-        upto = today + dt.timedelta(days=15)
-        workshops = Workshop.objects.filter(
-            date__range=(today, upto), status=1
-            ).order_by("date")
+    # Start with all successful workshops
+    workshops = Workshop.objects.filter(status=1)
+
+    # Apply filters if present
+    if from_date:
+        workshops = workshops.filter(date__gte=from_date)
+    if to_date:
+        workshops = workshops.filter(date__lte=to_date)
+    if state:
+        workshops = workshops.filter(coordinator__profile__state=state)
+    if workshoptype:
+        workshops = workshops.filter(workshop_type_id=workshoptype)
+        
+    # User specific filter
     if show_workshops:
         if is_instructor(user):
             workshops = workshops.filter(instructor_id=user.id)
         else:
             workshops = workshops.filter(coordinator_id=user.id)
+
+    # If no filters applied, maybe show a sensible default (e.g. last 30 days to next 30 days)
+    if not any([from_date, to_date, state, workshoptype, show_workshops]):
+        today = timezone.now().date()
+        start_default = today - dt.timedelta(days=30)
+        end_default = today + dt.timedelta(days=30)
+        workshops = workshops.filter(date__range=(start_default, end_default))
+
+    # Apply sorting
+    if sort:
+        workshops = workshops.order_by(sort)
+
+    # Populate form with initial data
+    form = FilterForm(
+        start=from_date, end=to_date, state=state, type=workshoptype,
+        show_workshops=show_workshops, sort=sort
+    )
     if download:
         data = workshops.values(
             "workshop_type__name", "coordinator__first_name",
@@ -90,12 +105,16 @@ def workshop_public_stats(request):
             return response
         else:
             messages.add_message(request, messages.WARNING, "No data found")
+    # Calculate chart data BEFORE pagination
     ws_states, ws_count = Workshop.objects.get_workshops_by_state(workshops)
     ws_type, ws_type_count = Workshop.objects.get_workshops_by_type(workshops)
+
+    # Now paginate for the table view
     paginator = Paginator(workshops, 30)
     page = request.GET.get('page')
-    workshops = paginator.get_page(page)
-    context = {"form": form, "objects": workshops, "ws_states": ws_states,
+    objects_list = paginator.get_page(page)
+
+    context = {"form": form, "objects": objects_list, "ws_states": ws_states,
                "ws_count": ws_count, "ws_type": ws_type,
                "ws_type_count": ws_type_count}
     return render(

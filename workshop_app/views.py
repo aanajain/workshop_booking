@@ -90,7 +90,7 @@ def user_login(request):
                 login(request, user)
                 if not request.POST.get('remember_me'):
                     request.session.set_expiry(0)
-                return redirect('/admin')
+                return redirect(reverse('workshop_app:index'))
                 
             if is_email_checked(user):
                 login(request, user)
@@ -491,7 +491,7 @@ def view_own_profile(request):
     """User can view own profile """
     user = request.user
     if user.is_superuser:
-        return redirect("admin")
+        return redirect("/admin/")
     profile = user.profile
     if request.method == 'POST':
         form = ProfileForm(request.POST, user=user, instance=profile)
