@@ -3,11 +3,10 @@
 {% load static %}
 {% load custom_filters %}
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
-        {% block title %}
-            HomePage
-        {% endblock %}
+        {% block title %} FOSSEE Workshops {% endblock %}
     </title>
 
     <script src="{% static 'workshop_app/js/jquery-3.4.1.min.js' %}"></script>
@@ -17,119 +16,156 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 
-
-    {% block extra-dependencies %}
-    {% endblock %}
-
     <link rel="stylesheet" href="{% static 'workshop_app/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'workshop_app/css/toastr.min.css' %}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'workshop_app/css/base.css' %}" type="text/css"/>
     <link rel="stylesheet" href="{% static 'workshop_app/css/font-awesome.css' %}" type="text/css"/>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700;900&display=swap" rel="stylesheet">
 
-    {% block extra-custom-scripts %}
-    {% endblock %}
+    <style>
+        :root {
+            --primary-color: #FF9500;
+            --primary-gradient: linear-gradient(135deg, #FF9500 0%, #FF7800 100%);
+            --secondary-color: #FFFBF6;
+            --glass-bg: rgba(18, 18, 18, 0.7);
+            --glass-border: rgba(255, 149, 0, 0.15);
+            --input-bg: rgba(30, 30, 30, 0.8);
+            --accent-blue: #74b9ff;
+        }
 
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Urbanist', sans-serif;
+            background-color: #0b0b0b;
+            color: var(--secondary-color);
+            min-height: 100vh;
+        }
+
+        /* Global Aurora Background */
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 10% 20%, rgba(255, 149, 0, 0.1) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 80%, rgba(255, 120, 0, 0.1) 0%, transparent 40%),
+                        radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 0%, #050505 100%);
+            z-index: -1;
+        }
+
+        .base-content {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Toastr Global Overrides */
+        #toast-container > .toast {
+            background-color: var(--glass-bg) !important;
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border) !important;
+            border-radius: 15px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+            opacity: 1 !important;
+            color: #fff !important;
+        }
+        .toast-success { border-left: 4px solid #55f7a8 !important; }
+        .toast-error { border-left: 4px solid #ff5252 !important; }
+        .toast-info { border-left: 4px solid var(--primary-color) !important; }
+
+        @keyframes float-blob {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(5%, -5%) scale(1.05); }
+            100% { transform: translate(10%, 10%) scale(1); }
+        }
+
+        /* Footer Reset */
+        footer {
+            padding: 2rem 0;
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.6;
+            margin-top: auto;
+        }
+    </style>
+
+    {% block extra-custom-scripts %}{% endblock %}
 </head>
 
 <body>
-{% block header %}
-    <nav class="navbar navbar-dark navbar-expand-lg bg-dark fixed-top">
-        {% if user.is_authenticated %}
-        <a class="navbar-brand text-white" href="{% url 'workshop_app:index' %}">FOSSEE Workshops</a>
-        {% else %}
-        <a class="navbar-brand text-white" href="{{request.scheme}}://{{request.get_host}}">FOSSEE Workshops</a>
-        {% endif %}
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="/">
-                        Home
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="{% url 'statistics_app:public' %}">
-                        Workshop Statistics
-                    </a>
-                </li>
-            </ul>
-            {% if user.is_authenticated %}
-            <ul class="navbar-nav mr-auto">
-                {% if request.user|has_group:"instructor" %}
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="{% url 'statistics_app:team' %}">
-                        Team Statistics
-                    </a>
-                </li>
-                {% endif %}
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="{% url 'workshop_app:workshop_status_instructor' %}">
-                        Workshop Status
-                    </a>
-                </li>
-                {% if not request.user|has_group:"instructor" %}
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'workshop_app:propose_workshop' %}">
-                            Propose Workshop
+    {% block header %}
+        <!-- Premium Navbar (Hidden by default on Login/Signup pages via blocks) -->
+        <nav class="container-fluid" style="padding-top: 1.5rem; display: flex; justify-content: center;">
+            <div style="background: rgba(18,18,18,0.7); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: 40px; padding: 0.8rem 2.5rem; display: flex; align-items: center; justify-content: space-between; width: 95%; max-width: 1200px;">
+                <a href="{% url 'workshop_app:index' %}" style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                    <span style="font-weight: 900; font-size: 1.4rem; color: #fff;">FOSSEE</span>
+                    <span style="font-weight: 900; font-size: 1.4rem; color: var(--primary-color);">Workshops</span>
+                </a>
+
+                <div style="display: flex; gap: 1.5rem; align-items: center;">
+                    <a href="/" style="color: rgba(255,255,255,0.7); text-decoration: none; font-weight: 600; font-size: 0.9rem;">Home</a>
+                    <a href="{% url 'statistics_app:public' %}" style="color: rgba(255,255,255,0.7); text-decoration: none; font-weight: 600; font-size: 0.9rem;">Statistics</a>
+                    {% if user.is_authenticated %}
+                        {% if request.user|has_group:"instructor" %}
+                            <a href="{% url 'statistics_app:team' %}" style="color: rgba(255,255,255,0.7); text-decoration: none; font-weight: 600; font-size: 0.9rem;">Team Stats</a>
+                        {% endif %}
+                        <a href="{% url 'workshop_app:workshop_status_instructor' %}" style="color: rgba(255,255,255,0.7); text-decoration: none; font-weight: 600; font-size: 0.9rem;">Status</a>
+                        <a href="{% url 'workshop_app:workshop_type_list' %}" style="color: rgba(255,255,255,0.7); text-decoration: none; font-weight: 600; font-size: 0.9rem;">Types</a>
+                    {% endif %}
+                </div>
+
+                {% if user.is_authenticated %}
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="color: #fff; text-decoration: none; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                            <i class="material-icons">account_circle</i>
+                            {{user.username|title}}
                         </a>
-                    </li>
-                {% endif %}
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="{% url 'workshop_app:workshop_type_list' %}">
-                        Workshop Types
-                    </a>
-                </li>
-            </ul>
-            <div class="my-2 my-lg-0">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                           <span class="material-icons" style="vertical-align: middle">account_circle</span>
-                            <p style="display: inline; vertical-align: middle">
-                                {{user.get_full_name|title}}
-                            </p>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="{% url 'workshop_app:view_own_profile' %}">Profile</a>
-                            <a class="dropdown-item" href="{% url 'password_change' %}">
-                                 Change Password
-                            </a>
-                            <a class="dropdown-item" href="{% url 'workshop_app:logout' %}">Logout</a>
+                        <div class="dropdown-menu dropdown-menu-right" style="background: #111; border: 1px solid var(--glass-border); border-radius: 15px; margin-top: 15px;">
+                            <a class="dropdown-item text-white" href="{% url 'workshop_app:view_own_profile' %}">Profile</a>
+                            <a class="dropdown-item text-white" href="{% url 'password_change' %}">Change Password</a>
+                            <div class="dropdown-divider" style="border-top: 1px solid rgba(255,255,255,0.1);"></div>
+                            <a class="dropdown-item" href="{% url 'workshop_app:logout' %}" style="color: #ff5252;">Logout</a>
                         </div>
-                    </li>
-                </ul>
+                    </div>
+                </div>
+                {% else %}
+                <a href="{% url 'workshop_app:login' %}" style="background: var(--primary-gradient); color: #fff; padding: 0.6rem 1.8rem; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 0.9rem;">Sign In</a>
+                {% endif %}
             </div>
-            {% endif %}
-        </div>
-    </nav>
-{% endblock %}
-
-<div class="base-content">
-    {% block content %}
-        <h1>Base Template Content. Please override me</h1>
+        </nav>
     {% endblock %}
-</div>
 
-<script>
-    {% if messages %}
-        {% for message in messages %}
-            toastr[{% if message.tags %} "{{ message.tags }}" {% else %} "info" {% endif %}]("{{ message }}");
-        {% endfor %}
-    {% endif %}
-</script>
+    <div class="base-content">
+        {% block content %}
+            <h1 style="text-align: center; margin-top: 5rem;">Base Template Content.</h1>
+        {% endblock %}
+    </div>
 
-</body>
-<footer class="footer">
+    <script>
+        // Premium Toastr Config
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-center",
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+
+        {% if messages %}
+            {% for message in messages %}
+                toastr["{{ message.tags|default:'info' }}"]("{{ message }}");
+            {% endfor %}
+        {% endif %}
+    </script>
+
     {% block footer %}
-       <div class="container">
-           Developed by FOSSEE group, IIT Bombay
-       </div> 
+        <footer>
+            Developed by FOSSEE group, IIT Bombay
+        </footer>
     {% endblock %}
-</footer>
+</body>
 </html>

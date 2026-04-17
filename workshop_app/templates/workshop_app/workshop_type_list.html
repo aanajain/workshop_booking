@@ -2,38 +2,13 @@
 {% load custom_filters %}
 {% load static %}
 
-{% block title %} Workshop Types {% endblock %}
+{% block title %} Workshop Types | FOSSEE Workshops {% endblock %}
 
 {% block header %}{% endblock %}
 {% block footer %}{% endblock %}
 
 {% block extra-custom-scripts %}
-<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
-    :root {
-        --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-        --glass-bg: rgba(15, 15, 30, 0.4);
-        --glass-border: rgba(255, 255, 255, 0.05);
-        --accent-blue: #3b82f6;
-    }
-
-    body {
-        margin: 0; padding: 0;
-        font-family: 'Urbanist', sans-serif;
-        background-color: #030308;
-        color: #fff;
-        overflow-x: hidden;
-    }
-
-    body::before {
-        content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
-                    #030308;
-        z-index: -1;
-    }
-
     .page-wrapper {
         padding: 1.5rem 3rem;
         position: relative;
@@ -44,67 +19,16 @@
         align-items: center;
     }
 
-    /* Premium Top Nav */
-    .top-navbar {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 3rem;
-        background: rgba(30, 30, 30, 0.4);
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        padding: 0.8rem 2rem;
-        border-radius: 40px;
-        position: relative;
-        z-index: 999;
+    .main-title {
+        font-size: 3rem;
+        font-weight: 900;
+        margin-bottom: 2.5rem;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
     }
 
-    .nav-links {
-        display: flex;
-        gap: 1.5rem;
-        align-items: center;
-    }
-
-    .nav-link-item {
-        color: rgba(255, 255, 255, 0.7);
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 0.9rem;
-        transition: all 0.3s ease;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-    }
-
-    .nav-link-item:hover, .nav-link-item.active {
-        color: #fff;
-        background: rgba(255, 255, 255, 0.1);
-    }
-
-    .btn-home-pill {
-        background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 30px; padding: 0.6rem 1.8rem; color: #fff; text-decoration: none; font-weight: 600;
-    }
-
-    .user-pill {
-        background: #5d4037; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px;
-        padding: 0.5rem 1.2rem; display: flex; align-items: center; gap: 10px; cursor: pointer; position: relative; transition: 0.3s;
-    }
-    .user-pill:hover { background: #6d4c41; }
-    
-    .profile-dropdown {
-        position: absolute; top: calc(100% + 10px); right: 0; background: #111111; border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 15px; min-width: 200px; padding: 0.8rem 0; opacity: 0; visibility: hidden; transform: translateY(-10px);
-        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-    }
-    .user-pill:hover .profile-dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
-    .dropdown-link { display: flex; align-items: center; gap: 12px; padding: 0.8rem 1.5rem; color: #fff; text-decoration: none; font-weight: 500; font-size: 0.95rem; }
-    .dropdown-link:hover { background: rgba(255, 255, 255, 0.05); color: #fff; text-decoration: none; }
-    .dropdown-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 0.5rem 0; }
-    .dropdown-logout { color: #ff5252 !important; }
-    .dropdown-logout i { color: #ff5252 !important; }
-
-    /* Glass Cards */
     .glass-card {
         background: var(--glass-bg);
         backdrop-filter: blur(25px);
@@ -117,45 +41,34 @@
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     }
 
-    .main-title {
-        font-size: 3rem;
-        font-weight: 800;
-        margin-bottom: 2rem;
-        background: linear-gradient(to right, #6366f1, #a855f7);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-align: center;
-    }
-
     /* Table Styling */
     .table-glass {
         width: 100%;
         border-collapse: collapse;
-        margin-bottom: 1rem;
     }
 
     .table-glass th {
         text-align: left;
         padding: 1.2rem;
-        color: #3b82f6;
+        color: var(--primary-color);
         text-transform: uppercase;
         font-size: 0.75rem;
         font-weight: 800;
         letter-spacing: 1.5px;
-        border-bottom: 2px solid rgba(59, 130, 246, 0.2);
+        border-bottom: 2px solid var(--glass-border);
     }
 
     .table-glass td {
         padding: 1.2rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid var(--glass-border);
         font-size: 0.95rem;
         color: rgba(255, 255, 255, 0.9);
-        font-weight: 500;
+        font-weight: 600;
         vertical-align: middle;
     }
 
     .table-glass tbody tr:hover {
-        background: rgba(255, 255, 255, 0.02);
+        background: rgba(255, 149, 0, 0.05);
     }
 
     .btn-action-glass {
@@ -163,26 +76,29 @@
         background: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 20px; color: #fff;
-        padding: 0.5rem 1.2rem; font-weight: 600; font-size: 0.85rem; text-decoration: none; transition: 0.3s;
+        padding: 0.5rem 1.2rem; font-weight: 700; font-size: 0.85rem; text-decoration: none; transition: 0.3s;
     }
     
     .btn-action-glass:hover {
-        background: rgba(255, 255, 255, 0.1);
+        background: var(--primary-gradient);
+        border-color: transparent;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 149, 0, 0.3);
         text-decoration: none; color: #fff;
     }
 
     .btn-primary-glass {
         display: inline-block;
-        background: linear-gradient(135deg, #6366f1, #a855f7);
+        background: var(--primary-gradient);
         border: none; border-radius: 20px; color: #fff;
-        padding: 0.6rem 1.5rem; font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: 0.3s;
-        box-shadow: 0 5px 15px rgba(124, 58, 237, 0.2);
-        margin-bottom: 2rem;
+        padding: 0.6rem 1.8rem; font-weight: 700; font-size: 0.9rem; text-decoration: none; transition: 0.3s;
+        box-shadow: 0 10px 20px rgba(255, 149, 0, 0.2);
+        margin-bottom: 2.5rem;
         float: right;
     }
     
     .btn-primary-glass:hover {
-        transform: translateY(-2px); box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4); text-decoration: none; color: #fff;
+        transform: translateY(-2px); box-shadow: 0 15px 30px rgba(255, 149, 0, 0.4); text-decoration: none; color: #fff;
     }
 
     /* Pagination */
@@ -191,61 +107,28 @@
         margin-top: 2rem;
         font-size: 0.9rem;
         color: rgba(255, 255, 255, 0.6);
+        font-weight: 600;
     }
 
     .pagination-wrapper a {
-        color: #6366f1;
+        color: var(--primary-color);
         text-decoration: none;
-        margin: 0 5px;
+        margin: 0 8px;
+        font-weight: 800;
     }
-
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="page-wrapper">
-    <!-- Premium Top Navbar -->
-    <nav class="top-navbar">
-        <a href="{% url 'workshop_app:index' %}" class="btn-home-pill">Home</a>
-        
-        <div class="nav-links">
-            {% if request.user|has_group:"instructor" %}
-                <a href="{% url 'statistics_app:team' %}" class="nav-link-item">Team Statistics</a>
-            {% endif %}
-            <a href="{% url 'workshop_app:index' %}" class="nav-link-item">Workshop Status</a>
-            {% if not request.user|has_group:"instructor" %}
-                <a href="{% url 'workshop_app:propose_workshop' %}" class="nav-link-item">Propose Workshop</a>
-            {% endif %}
-            <a href="{% url 'workshop_app:workshop_type_list' %}" class="nav-link-item active">Workshop Types</a>
-        </div>
-        
-        <div class="user-pill">
-            <i class="material-icons">account_circle</i>
-            <span style="font-weight: 700;">
-                {% if user.get_full_name %}{{ user.get_full_name|title }}{% else %}{{ user.username|title }}{% endif %}
-            </span>
-            <i class="material-icons">arrow_drop_down</i>
-            
-            <div class="profile-dropdown text-left">
-                <a href="{% url 'workshop_app:view_own_profile' %}" class="dropdown-link">
-                    <i class="material-icons">person</i> Profile
-                </a>
-                <a href="{% url 'password_change' %}" class="dropdown-link">
-                    <i class="material-icons">badge</i> Change Password
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="{% url 'workshop_app:logout' %}" class="dropdown-link dropdown-logout">
-                    <i class="material-icons">logout</i> Logout
-                </a>
-            </div>
-        </div>
-    </nav>
+    <h1 class="main-title">Workshop Types</h1>
 
     <div class="glass-card">
-        <h1 class="main-title">Workshop Types</h1>
-        
         {% if request.user|has_group:"instructor" %}
-            <a href="{% url 'workshop_app:add_workshop_type' %}" class="btn-primary-glass">Add Workshop Type</a>
+            <a href="{% url 'workshop_app:add_workshop_type' %}" class="btn-primary-glass">
+                <i class="material-icons" style="vertical-align: middle; font-size: 1.1rem; margin-right: 5px;">add_circle</i>
+                Add New Type
+            </a>
             <div style="clear: both;"></div>
         {% endif %}
         
@@ -253,29 +136,41 @@
             <table class="table-glass">
                 <thead>
                     <tr>
-                        <th>SR NO</th>
+                        <th>#</th>
                         <th>WORKSHOP NAME</th>
-                        <th>WORKSHOP DURATION (DAYS)</th>
-                        <th>ACTION</th>
+                        <th>DURATION (DAYS)</th>
+                        <th style="text-align: right;">ACTION</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for w in workshop_type %}
                     <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ w.name }}</td>
-                        <td>{{ w.duration }}</td>
-                        <td>
+                        <td style="opacity: 0.6;">{{ forloop.counter }}</td>
+                        <td style="color: #fff; font-weight: 700;">{{ w.name }}</td>
+                        <td>{{ w.duration }} Days</td>
+                        <td style="text-align: right;">
                             <a href="{% url 'workshop_app:workshop_type_details' w.id %}" class="btn-action-glass">View Details</a>
                         </td>
                     </tr>
+                    {% empty %}
+                        <tr><td colspan="4" style="text-align: center; padding: 3rem; opacity: 0.5;">No workshop types available.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
 
         <div class="pagination-wrapper">
-            Page {{ workshop_type.number }} of {{ workshop_type.paginator.num_pages }}
+            Showing Page <span style="color: #fff;">{{ workshop_type.number }}</span> of {{ workshop_type.paginator.num_pages }}
+            {% if workshop_type.has_other_pages %}
+                <div style="margin-top: 10px;">
+                    {% if workshop_type.has_previous %}
+                        <a href="?page={{ workshop_type.previous_page_number }}">Previous</a>
+                    {% endif %}
+                    {% if workshop_type.has_next %}
+                        <a href="?page={{ workshop_type.next_page_number }}">Next</a>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>

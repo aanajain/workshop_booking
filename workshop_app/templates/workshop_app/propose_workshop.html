@@ -2,7 +2,7 @@
 {% load custom_filters %}
 {% load static %}
 
-{% block title %} Propose Workshop {% endblock %}
+{% block title %} Propose Workshop | FOSSEE Workshops {% endblock %}
 
 {% block header %}{% endblock %}
 {% block footer %}{% endblock %}
@@ -14,32 +14,7 @@
 {% endblock %}
 
 {% block extra-custom-scripts %}
-<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
-    :root {
-        --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-        --glass-bg: rgba(15, 15, 30, 0.4);
-        --glass-border: rgba(255, 255, 255, 0.05);
-        --accent-blue: #3b82f6;
-    }
-
-    body {
-        margin: 0; padding: 0;
-        font-family: 'Urbanist', sans-serif;
-        background-color: #030308;
-        color: #fff;
-        overflow-x: hidden;
-    }
-
-    body::before {
-        content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
-                    #030308;
-        z-index: -1;
-    }
-
     .page-wrapper {
         padding: 1.5rem 3rem;
         position: relative;
@@ -50,75 +25,13 @@
         align-items: center;
     }
 
-    /* Premium Top Nav */
-    .top-navbar {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        background: rgba(30, 30, 30, 0.4);
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        padding: 0.8rem 2rem;
-        border-radius: 40px;
-        position: relative;
-        z-index: 999;
-    }
-
-    .nav-links {
-        display: flex;
-        gap: 1.5rem;
-        align-items: center;
-    }
-
-    .nav-link-item {
-        color: rgba(255, 255, 255, 0.7);
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 0.9rem;
-        transition: all 0.3s ease;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-    }
-
-    .nav-link-item:hover, .nav-link-item.active {
-        color: #fff;
-        background: rgba(255, 255, 255, 0.1);
-        text-decoration: none;
-    }
-
-    .btn-home-pill {
-        background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 30px; padding: 0.6rem 1.8rem; color: #fff; text-decoration: none; font-weight: 600;
-    }
-    .btn-home-pill:hover { background: rgba(255, 255, 255, 0.15); color: #fff; text-decoration: none; }
-
-    .user-pill {
-        background: #5d4037; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px;
-        padding: 0.5rem 1.2rem; display: flex; align-items: center; gap: 10px; cursor: pointer; position: relative; transition: 0.3s;
-    }
-    .user-pill:hover { background: #6d4c41; }
-    
-    .profile-dropdown {
-        position: absolute; top: calc(100% + 10px); right: 0; background: #111111; border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 15px; min-width: 220px; padding: 0.8rem 0; opacity: 0; visibility: hidden; transform: translateY(-10px);
-        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-    }
-    .user-pill:hover .profile-dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
-    .dropdown-link { display: flex; align-items: center; gap: 12px; padding: 0.8rem 1.5rem; color: #fff; text-decoration: none; font-weight: 500; font-size: 0.95rem; }
-    .dropdown-link:hover { background: rgba(255, 255, 255, 0.05); color: #fff; text-decoration: none; }
-    .dropdown-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 0.5rem 0; }
-    .dropdown-logout { color: #ff5252 !important; }
-    .dropdown-logout i { color: #ff5252 !important; }
-
     /* Note Banner */
     .note-info-bar {
         width: 100%;
         max-width: 900px;
-        background: rgba(59, 130, 246, 0.05);
-        border: 1px solid rgba(59, 130, 246, 0.3);
-        box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
+        background: rgba(255, 149, 0, 0.05);
+        border: 1px solid rgba(255, 149, 0, 0.3);
+        box-shadow: 0 0 20px rgba(255, 149, 0, 0.1);
         border-radius: 30px;
         padding: 0.8rem 2rem;
         display: flex;
@@ -130,15 +43,15 @@
         color: rgba(255, 255, 255, 0.8);
     }
 
-    .note-info-bar i { color: #3b82f6; }
-    .note-info-bar a { color: #3b82f6; font-weight: 700; text-decoration: underline; }
+    .note-info-bar i { color: var(--primary-color); }
+    .note-info-bar a { color: var(--primary-color); font-weight: 700; text-decoration: underline; }
 
     /* Centered Text */
     .main-title {
         font-size: 3rem;
-        font-weight: 800;
+        font-weight: 900;
         margin-bottom: 2.5rem;
-        background: linear-gradient(to right, #6366f1, #a855f7);
+        background: var(--primary-gradient);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         text-align: center;
@@ -151,7 +64,7 @@
         background: var(--glass-bg);
         border: 1px solid var(--glass-border);
         backdrop-filter: blur(25px);
-        padding: 3rem;
+        padding: 3.5rem 3rem;
         border-radius: 40px;
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     }
@@ -163,15 +76,17 @@
     .form-group-custom label {
         display: block;
         font-weight: 700;
-        font-size: 0.95rem;
-        margin-bottom: 0.8rem;
+        font-size: 0.75rem;
+        margin-left: 1.2rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.6;
         color: #fff;
     }
 
     .input-glass {
         width: 100%;
         height: 55px;
-        background: rgba(255, 255, 255, 0.02);
+        background: var(--input-bg);
         border: 1.5px solid rgba(255, 255, 255, 0.1);
         border-radius: 30px;
         color: #fff;
@@ -182,13 +97,13 @@
     }
 
     .input-glass:focus {
-        border-color: #6366f1;
-        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--primary-color);
+        background: rgba(40, 40, 40, 0.9);
         outline: none;
-        box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+        box-shadow: 0 0 0 4px rgba(255, 149, 0, 0.1);
     }
 
-    .btn-submit-purple {
+    .btn-submit {
         width: 100%;
         height: 60px;
         background: var(--primary-gradient);
@@ -199,38 +114,39 @@
         font-size: 1.1rem;
         cursor: pointer;
         transition: transform 0.3s, box-shadow 0.3s;
-        box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
+        box-shadow: 0 10px 20px rgba(255, 149, 0, 0.2);
         margin-top: 1rem;
     }
 
-    .btn-submit-purple:hover {
+    .btn-submit:hover {
         transform: translateY(-3px);
-        box-shadow: 0 15px 40px rgba(124, 58, 237, 0.5);
+        box-shadow: 0 15px 30px rgba(255, 149, 0, 0.4);
     }
 
-    /* Datepicker styling */
+    /* Datepicker styling - Orange Theme */
     .ui-datepicker {
-        background: rgba(15, 15, 30, 0.95) !important;
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        background: rgba(18, 18, 18, 0.95) !important;
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border) !important;
         border-radius: 20px !important;
         padding: 15px !important;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.8);
         color: #fff !important;
+        font-family: 'Urbanist', sans-serif !important;
     }
     .ui-datepicker-header { background: transparent !important; border: none !important; color: #fff !important; }
     .ui-datepicker-title { color: #fff !important; font-weight: 700; }
-    .ui-datepicker-calendar th { color: #6366f1 !important; text-transform: uppercase; font-size: 0.7rem; }
+    .ui-datepicker-calendar th { color: var(--primary-color) !important; text-transform: uppercase; font-size: 0.7rem; font-weight: 800; }
     .ui-datepicker-calendar .ui-state-default {
         background: rgba(255,255,255,0.03) !important; border: 1px solid rgba(255,255,255,0.05) !important;
-        color: #fff !important; margin: 2px !important; width: 32px !important; height: 32px !important;
-        display: flex !important; align-items: center !important; justify-content: center !important; border-radius: 8px !important; transition: 0.2s;
+        color: rgba(255,255,255,0.8) !important; margin: 2px !important; width: 32px !important; height: 32px !important;
+        display: flex !important; align-items: center !important; justify-content: center !important; border-radius: 50% !important; transition: 0.2s;
     }
-    .ui-datepicker-calendar .ui-state-hover { background: #6366f1 !important; color: #fff !important; }
-    .ui-datepicker-calendar .ui-state-active { background: #a855f7 !important; border: none !important; font-weight: 800 !important; }
-    .ui-datepicker-next span, .ui-datepicker-prev span { filter: invert(1); }
+    .ui-datepicker-calendar .ui-state-hover { background: rgba(255, 149, 0, 0.2) !important; color: var(--primary-color) !important; border-color: var(--primary-color) !important; }
+    .ui-datepicker-calendar .ui-state-active { background: var(--primary-gradient) !important; border: none !important; color: #fff !important; font-weight: 800 !important; }
+    .ui-datepicker-next span, .ui-datepicker-prev span { filter: brightness(0) invert(1) sepia(100%) saturate(1000%) hue-rotate(10deg); }
 
-    select.input-glass option { background: #0b0b1a; color: #fff; }
+    select.input-glass option { background: #111; color: #fff; }
 
 </style>
 
@@ -256,43 +172,6 @@
 
 {% block content %}
 <div class="page-wrapper">
-    <!-- Premium Top Nav -->
-    <nav class="top-navbar">
-        <a href="{% url 'workshop_app:index' %}" class="btn-home-pill">Home</a>
-        
-        <div class="nav-links">
-            {% if request.user|has_group:"instructor" %}
-                <a href="{% url 'statistics_app:team' %}" class="nav-link-item">Team Statistics</a>
-            {% endif %}
-            <a href="{% url 'workshop_app:index' %}" class="nav-link-item">Workshop Status</a>
-            {% if not request.user|has_group:"instructor" %}
-                <a href="{% url 'workshop_app:propose_workshop' %}" class="nav-link-item active">Propose Workshop</a>
-            {% endif %}
-            <a href="{% url 'workshop_app:workshop_type_list' %}" class="nav-link-item">Workshop Types</a>
-        </div>
-        
-        <div class="user-pill">
-            <i class="material-icons">account_circle</i>
-            <span style="font-weight: 700;">
-                {% if user.get_full_name %}{{ user.get_full_name|title }}{% else %}{{ user.username|title }}{% endif %}
-            </span>
-            <i class="material-icons">arrow_drop_down</i>
-            
-            <div class="profile-dropdown">
-                <a href="{% url 'workshop_app:view_own_profile' %}" class="dropdown-link">
-                    <i class="material-icons">person</i> Profile
-                </a>
-                <a href="{% url 'password_change' %}" class="dropdown-link">
-                    <i class="material-icons">badge</i> Change Password
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="{% url 'workshop_app:logout' %}" class="dropdown-link dropdown-logout">
-                    <i class="material-icons">logout</i> Logout
-                </a>
-            </div>
-        </div>
-    </nav>
-
     <div class="note-info-bar">
         <i class="material-icons">info</i>
         <span>Note: Before proposing the workshop, please check the workshop details in the <a href="{% url 'workshop_app:workshop_type_list' %}">Workshop Types</a> section.</span>
@@ -304,8 +183,8 @@
         <form action="" method="post">
             {% csrf_token %}
             {% if form.errors %}
-                <div style="background: rgba(255, 82, 82, 0.1); border: 1.5px solid #ff5252; padding: 1rem; border-radius: 20px; margin-bottom: 2rem; color: #ff5252; font-weight: 700;">
-                    Please correct the errors below.
+                <div style="background: rgba(255, 82, 82, 0.1); border: 1.5px solid #ff5252; padding: 1.2rem; border-radius: 20px; margin-bottom: 2rem; color: #ff8b94; font-size: 0.9rem; font-weight: 600;">
+                    Please correct the errors in the form.
                 </div>
             {% endif %}
 
@@ -313,19 +192,19 @@
                 <label>Workshop Type</label>
                 {{ form.workshop_type }}
                 {% for error in form.workshop_type.errors %}
-                    <small style="color: #ff5252; font-weight: 600;">{{ error }}</small>
+                    <small style="color: #ff5252; font-weight: 600; margin-left: 1rem; display: block; margin-top: 0.5rem;">{{ error }}</small>
                 {% endfor %}
             </div>
 
             <div class="form-group-custom">
-                <label>Preferred Workshop Date</label>
+                <label>Preferred Date</label>
                 {{ form.date }}
                 {% for error in form.date.errors %}
-                    <small style="color: #ff5252; font-weight: 600;">{{ error }}</small>
+                    <small style="color: #ff5252; font-weight: 600; margin-left: 1rem; display: block; margin-top: 0.5rem;">{{ error }}</small>
                 {% endfor %}
             </div>
 
-            <button class="btn-submit-purple" type="submit">Submit Proposal</button>
+            <button class="btn-submit" type="submit">Submit Proposal</button>
         </form>
     </div>
 </div>

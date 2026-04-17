@@ -1,7 +1,7 @@
 {% extends "workshop_app/base.html" %}
 {% load static %}
 
-{% block title %} Logged Out {% endblock %}
+{% block title %} Logged Out | FOSSEE Workshops {% endblock %}
 
 {% block header %}{% endblock %}
 {% block footer %}{% endblock %}
@@ -12,21 +12,59 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 <style>
     :root {
-        --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-        --glass-bg: rgba(15, 15, 30, 0.4);
-        --glass-border: rgba(255, 255, 255, 0.05);
+        --primary-color: #FF9500;
+        --primary-gradient: linear-gradient(135deg, #FF9500 0%, #FF7800 100%);
+        --glass-bg: rgba(18, 18, 18, 0.7);
+        --glass-border: rgba(255, 149, 0, 0.15);
     }
 
     body {
         margin: 0; padding: 0; font-family: 'Urbanist', sans-serif;
-        background-color: #030308; color: #fff; overflow-x: hidden;
+        background-color: #0b0b0b; color: #fff; overflow-x: hidden;
     }
+    
+    /* Aurora Background */
     body::before {
         content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
-                    #030308;
+        background: radial-gradient(circle at 10% 20%, rgba(255, 149, 0, 0.1) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(255, 120, 0, 0.1) 0%, transparent 40%),
+                    radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 0%, #050505 100%);
         z-index: -1;
+    }
+
+    .aurora-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -2;
+        overflow: hidden;
+    }
+
+    .aurora-blob {
+        position: absolute;
+        filter: blur(80px);
+        border-radius: 50%;
+        opacity: 0.6;
+        animation: float-blob 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform;
+    }
+
+    .aurora-blob-1 {
+        width: 600px; height: 600px; background: radial-gradient(circle, rgba(255, 149, 0, 0.15) 0%, transparent 70%);
+        top: -10%; left: -10%;
+    }
+
+    .aurora-blob-2 {
+        width: 500px; height: 500px; background: radial-gradient(circle, rgba(162, 155, 254, 0.15) 0%, transparent 70%);
+        bottom: -10%; right: -10%; animation-duration: 30s;
+    }
+
+    @keyframes float-blob {
+        0% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(15%, -10%) scale(1.1); }
+        100% { transform: translate(10%, 20%) scale(1.05); }
     }
 
     .logout-wrapper {
@@ -42,17 +80,17 @@
 
     @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-    .check-icon { font-size: 6rem; color: #55f7a8; margin-bottom: 2rem; display: block; filter: drop-shadow(0 0 15px rgba(85, 247, 168, 0.3)); }
+    .check-icon { font-size: 6rem; color: #FF9500; margin-bottom: 2rem; display: block; filter: drop-shadow(0 0 15px rgba(255, 149, 0, 0.3)); }
 
     h1 { font-weight: 800; font-size: 2.2rem; margin-bottom: 1rem; }
     p { color: rgba(255, 255, 255, 0.6); font-size: 1.1rem; margin-bottom: 2.5rem; }
 
-    .btn-login-purple {
+    .btn-login {
         display: block; width: 100%; background: var(--primary-gradient); color: #fff; font-weight: 700;
         padding: 1rem; border-radius: 30px; text-decoration: none; transition: 0.3s;
-        box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
+        box-shadow: 0 10px 30px rgba(255, 149, 0, 0.3);
     }
-    .btn-login-purple:hover { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(124, 58, 237, 0.5); color: #fff; text-decoration: none; }
+    .btn-login:hover { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(255, 149, 0, 0.5); color: #fff; text-decoration: none; }
 
 </style>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
@@ -64,19 +102,29 @@
             close: true,
             gravity: "top", position: "center",
             stopOnFocus: true,
-            style: { background: "linear-gradient(to right, #6366f1, #a855f7)", borderRadius: "15px" }
+            style: { 
+                background: "linear-gradient(to right, #FF9500, #FF7800)", 
+                borderRadius: "15px",
+                border: "1px solid rgba(255, 149, 0, 0.3)",
+                boxShadow: "0 10px 20px rgba(255, 149, 0, 0.2)"
+            }
         }).showToast();
     });
 </script>
 {% endblock %}
 
 {% block content %}
+<div class="aurora-bg">
+    <div class="aurora-blob aurora-blob-1"></div>
+    <div class="aurora-blob aurora-blob-2"></div>
+</div>
+
 <div class="logout-wrapper">
     <div class="glass-card">
         <i class="material-icons check-icon">check_circle_outline</i>
         <h1>Success!</h1>
         <p>You have been safely logged out of FOSSEE Workshops.</p>
-        <a href="{% url 'workshop_app:login' %}" class="btn-login-purple">Return to Login</a>
+        <a href="{% url 'workshop_app:login' %}" class="btn-login">Return to Login</a>
     </div>
 </div>
 {% endblock %}

@@ -3,65 +3,150 @@
 
 {% block title %}Register | FOSSEE Workshops{% endblock %}
 
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
 {% block extra-custom-scripts %}
 <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
     :root {
-        --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-        --glass-bg: rgba(15, 15, 30, 0.4);
-        --glass-border: rgba(255, 255, 255, 0.05);
+        --primary-color: #FF9500;
+        --primary-gradient: linear-gradient(135deg, #FF9500 0%, #FF7800 100%);
+        --secondary-color: #FFFBF6;
+        --glass-bg: rgba(18, 18, 18, 0.7);
+        --glass-border: rgba(255, 149, 0, 0.15);
         --input-bg: rgba(30, 30, 30, 0.8);
-        --accent-blue: #3b82f6;
     }
     body {
         margin: 0; padding: 0;
         font-family: 'Urbanist', sans-serif;
-        background-color: #030308;
-        color: #fff;
+        background-color: #0b0b0b;
+        color: var(--secondary-color);
         overflow-x: hidden;
     }
     body::before {
         content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: radial-gradient(circle at 20% 30%, rgba(99,102,241,0.15) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 70%, rgba(168,85,247,0.15) 0%, transparent 50%),
-                    #030308;
+        background: radial-gradient(circle at 10% 20%, rgba(255, 149, 0, 0.1) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(255, 120, 0, 0.1) 0%, transparent 40%),
+                    radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 0%, #050505 100%);
         z-index: -1;
     }
-    .page-wrapper {display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem;}
-    .glass-card {background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-        border: 1px solid var(--glass-border); border-radius: 40px; max-width: 500px; width: 100%; padding: 3rem 2rem;
-        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center; animation: slideIn 0.8s cubic-bezier(0.16,1,0.3,1);}
-    @keyframes slideIn {from {opacity:0; transform:translateY(30px);} to {opacity:1; transform:translateY(0);}}
-    .logo-container {margin-bottom: 1.5rem;}
-    .logo-container img {width:80px; height:80px; filter: drop-shadow(0 0 15px rgba(255,149,0,0.4));}
-    h1 {font-weight:800; font-size:2.2rem; margin-bottom:0.5rem;}
-    .subtitle {font-weight:300; font-size:0.95rem; opacity:0.7; margin-bottom:2rem;}
-    .form-group {margin-bottom:1.5rem; text-align:left;}
-    .form-group label {display:block; font-size:0.75rem; font-weight:300; margin-left:1.2rem; margin-bottom:0.3rem; opacity:0.6;}
-    input[type="text"], input[type="email"], input[type="password"] {
-        width:100%; background: var(--input-bg); border:1px solid rgba(255,255,255,0.1); border-radius:20px;
-        padding:1rem 1.2rem; color:#fff; font-size:1rem; transition:all 0.3s ease; outline:none; box-sizing:border-box;}
-    input:focus {border-color: var(--primary-gradient); background:rgba(40,40,40,0.9); box-shadow:0 0 0 4px rgba(255,149,0,0.1);}
-    .btn-submit {background: var(--primary-gradient); color:#fff; border:none; border-radius:30px; padding:0.8rem 2rem; font-weight:700; font-size:1rem; cursor:pointer; transition:0.3s;}
-    .btn-submit:hover {transform:translateY(-2px); box-shadow:0 10px 20px rgba(124,58,237,0.3);}
-    .errorlist {color:#ff5252; margin-left:1.2rem; font-size:0.85rem;}
+
+    .aurora-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -2;
+        overflow: hidden;
+    }
+
+    .aurora-blob {
+        position: absolute;
+        filter: blur(80px);
+        border-radius: 50%;
+        opacity: 0.6;
+        animation: float-blob 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform;
+    }
+
+    .aurora-blob-1 {
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(255, 149, 0, 0.15) 0%, transparent 70%);
+        top: -10%;
+        left: -10%;
+        animation-delay: 0s;
+    }
+
+    .aurora-blob-2 {
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(162, 155, 254, 0.15) 0%, transparent 70%);
+        bottom: -10%;
+        right: -10%;
+        animation-duration: 30s;
+        animation-delay: -5s;
+    }
+
+    .aurora-blob-3 {
+        width: 700px;
+        height: 700px;
+        background: radial-gradient(circle, rgba(116, 185, 255, 0.1) 0%, transparent 70%);
+        top: 20%;
+        left: 30%;
+        animation-duration: 35s;
+        animation-delay: -10s;
+    }
+
+    @keyframes float-blob {
+        0% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(15%, -10%) scale(1.1); }
+        66% { transform: translate(-10%, 15%) scale(0.9); }
+        100% { transform: translate(10%, 20%) scale(1.05); }
+    }
+
+    .page-wrapper { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
+    .glass-card { 
+        background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border); border-radius: 40px; max-width: 500px; width: 100%; padding: 3rem 2.5rem;
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center; animation: slideIn 0.8s cubic-bezier(0.16,1,0.3,1);
+    }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .logo-container { margin-bottom: 2rem; }
+    .wordmark-container { display: flex; justify-content: center; align-items: center; gap: 6px; margin-bottom: 0.2rem; }
+    .wordmark-fossee { font-weight: 900; font-size: 2rem; color: #ffffff; }
+    .wordmark-workshops { font-weight: 900; font-size: 2rem; background: linear-gradient(90deg, #74b9ff, #a29bfe, #ffa502); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    
+    h1 { font-weight: 800; font-size: 2rem; margin-bottom: 0.5rem; }
+    .subtitle { font-weight: 300; font-size: 0.95rem; opacity: 0.7; margin-bottom: 2.5rem; }
+    
+    .form-group { margin-bottom: 1.5rem; text-align: left; }
+    .form-group label { display: block; font-size: 0.75rem; font-weight: 300; margin-left: 1.2rem; margin-bottom: 0.3rem; opacity: 0.6; }
+    
+    input[type="text"], input[type="email"], input[type="password"], select {
+        width: 100%; background: var(--input-bg); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px;
+        padding: 1rem 1.2rem; color: #fff; font-size: 1rem; transition: all 0.3s ease; outline: none; box-sizing: border-box;
+    }
+    input:focus, select:focus { border-color: var(--primary-color); background: rgba(40,40,40,0.9); box-shadow: 0 0 0 4px rgba(255, 149, 0, 0.1); }
+    
+    .btn-submit { 
+        width: 100%; background: var(--primary-gradient); color: #fff; border: none; border-radius: 20px; 
+        padding: 1rem; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: 0.3s;
+        box-shadow: 0 10px 20px -5px rgba(255, 149, 0, 0.3);
+    }
+    .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 15px 25px -5px rgba(255, 149, 0, 0.4); }
+    
+    .errorlist { color: #ff5252; margin-left: 1.2rem; font-size: 0.85rem; padding: 0; list-style: none; margin-top: 5px; }
+    .footer-links { margin-top: 2rem; font-size: 0.9rem; opacity: 0.7; }
+    .footer-links a { color: var(--primary-color); text-decoration: none; font-weight: 700; }
 </style>
 {% endblock %}
 
 {% block content %}
+<div class="aurora-bg">
+    <div class="aurora-blob aurora-blob-1"></div>
+    <div class="aurora-blob aurora-blob-2"></div>
+    <div class="aurora-blob aurora-blob-3"></div>
+</div>
+
 <div class="page-wrapper">
     <div class="glass-card">
         <div class="logo-container">
-            <img src="{% static 'workshop_app/img/logo.png' %}" alt="FOSSEE Logo">
+            <div class="wordmark-container">
+                <span class="wordmark-fossee">FOSSEE</span> <span class="wordmark-workshops">Workshops</span>
+            </div>
         </div>
-        <h1>Coordinator Registration</h1>
-        <p class="subtitle">Create your account to manage workshops.</p>
+        <h1>Create Account</h1>
+        <p class="subtitle">Join our community of workshop coordinators.</p>
         <form method="post" novalidate>
             {% csrf_token %}
             {% for field in form %}
                 <div class="form-group">
-                    {{ field.label_tag }}
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                     {{ field }}
                     {% if field.errors %}
                         <ul class="errorlist">
@@ -72,8 +157,11 @@
                     {% endif %}
                 </div>
             {% endfor %}
-            <button type="submit" class="btn-submit">Register</button>
+            <button type="submit" class="btn-submit">Sign up</button>
         </form>
+        <div class="footer-links">
+            Already have an account? <a href="{% url 'workshop_app:login' %}">Sign in</a>
+        </div>
     </div>
 </div>
 {% endblock %}
