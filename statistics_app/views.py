@@ -93,7 +93,7 @@ def workshop_public_stats(request):
         df = pd.DataFrame(list(data))
         if not df.empty:
             df.status.replace(
-                [0, 1, 2], ['Pending', 'Success', 'Reject'], inplace=True
+                [0, 1, 2, 3], ['Pending', 'Success', 'Reject', 'Deleted'], inplace=True
             )
             codes, states_map = list(zip(*states))
             df.coordinator__profile__state.replace(
@@ -155,3 +155,43 @@ def team_stats(request, team_id=None):
         {'team_labels': team_labels, "ws_count": ws_count, 'all_teams': teams,
          'team_id': team.id}
     )
+
+
+@login_required
+def workshop_stats(request):
+    """Instructor specific statistics"""
+    user = request.user
+    if not is_instructor(user):
+        return redirect(reverse("workshop_app:index"))
+
+    today = timezone.now().date()
+    current_month = today.month
+    current_year = today.year
+
+    # Monthly count (Accepted workshops for this month)
+    monthly_count = Workshop.objects.filter(
+        instructor=user,
+        date__month=current_month,
+        date__year=current_year,
+        status=1
+    ).count()
+
+    # Upcoming Workshops
+    upcoming_workshops = Workshop.objects.filter(
+        instructor=user,
+        date__gte=today,
+        status=1
+    ).order_by('date')
+
+    # Profile Stats (Example: Total Accepted vs Total Proposed by this user if they also coordinate)
+    total_conducted = Workshop.objects.filter(instructor=user, status=1).count()
+    total_proposed = Workshop.objects.filter(coordinator=user).count()
+
+    context = {
+        'monthly_count': monthly_count,
+        'upcoming_workshops': upcoming_workshops,
+        'total_conducted': total_conducted,
+        'total_proposed': total_proposed,
+        'today': today
+    }
+    return render(request, 'statistics_app/workshop_stats.html', context)

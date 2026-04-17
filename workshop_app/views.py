@@ -244,6 +244,42 @@ def accept_workshop(request, workshop_id):
 
 
 @login_required
+def reject_workshop(request, workshop_id):
+    user = request.user
+    if not is_instructor(user):
+        return redirect(get_landing_page(user))
+    workshop = Workshop.objects.get(id=workshop_id)
+    # Status 2: Rejected
+    workshop.status = 2
+    workshop.instructor = user
+    workshop.save()
+    messages.add_message(request, messages.WARNING, "Workshop rejected.")
+    
+    # Notify Coordinator
+    send_email(request, call_on='Reject Workshop',
+               workshop_date=str(workshop.date),
+               workshop_title=workshop.workshop_type.name,
+               other_email=workshop.coordinator.email
+               )
+    
+    return redirect(reverse('workshop_app:workshop_status_instructor'))
+
+
+@login_required
+def delete_workshop(request, workshop_id):
+    user = request.user
+    if not is_instructor(user):
+        return redirect(get_landing_page(user))
+    workshop = Workshop.objects.get(id=workshop_id)
+    # Status 3: Deleted
+    workshop.status = 3
+    workshop.instructor = user
+    workshop.save()
+    messages.add_message(request, messages.ERROR, "Workshop deleted from schedule.")
+    return redirect(reverse('workshop_app:workshop_status_instructor'))
+
+
+@login_required
 def change_workshop_date(request, workshop_id):
     user = request.user
     if not is_instructor(user):
@@ -475,12 +511,26 @@ def view_profile(request, user_id):
     user = request.user
     if is_instructor(user) and is_email_checked(user):
         coordinator_profile = Profile.objects.get(user_id=user_id)
-        workshops = Workshop.objects.filter(coordinator=user_id).order_by(
-            'date')
+        
+        if request.method == 'POST':
+            comment_text = request.POST.get('comment')
+            if comment_text:
+                Comment.objects.create(
+                    author=user,
+                    recipient=coordinator_profile.user,
+                    comment=comment_text,
+                    created_date=timezone.now()
+                )
+                messages.add_message(request, messages.SUCCESS, "Comment posted on profile.")
+            return redirect(reverse('workshop_app:view_profile', args=[user_id]))
+
+        workshops = Workshop.objects.filter(coordinator=user_id).order_by('date')
+        profile_comments = Comment.objects.filter(recipient=coordinator_profile.user).order_by('-created_date')
 
         return render(request, "workshop_app/view_profile.html",
                       {"coordinator_profile": coordinator_profile,
-                       "Workshops": workshops})
+                       "Workshops": workshops,
+                       "profile_comments": profile_comments})
     return redirect(get_landing_page(user))
 
 

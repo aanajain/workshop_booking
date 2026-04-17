@@ -39,26 +39,38 @@ The most challenging part was the **Varied Inheritance Structure** of the legacy
 
 ---
 
-## 📸 Visual Showcase
+## ✨ Key Feature Enhancements (Phase 3)
 
-### Before Modernization
-*(Placeholder: Add your legacy screenshots here)*
-> [!NOTE]
-> *Legacy UI featured Indigo-Purple gradients, standard web forms, and a traditional dashboard layout.*
+### 1. Interactive Geographic Hub
+Beyond simple tables, the portal now features a **Professional-Grade Interactive Map of India**.
+- **Accuracy**: Built with precision-grade SVG coordinates for all states.
+- **Data Insights**: Hover over states to see real-time workshop density and localized counts.
+- **Aurora Integration**: Styled with golden-orange glows and glassmorphism tooltips.
 
-### After Modernization ("Aurora" Theme)
+### 2. Instructor Statistics Dashboard
+Instructors have gained a dedicated analytics command center:
+- **Monthly Velocity**: Live tracking of workshop frequency for the current month.
+- **Upcoming Forecast**: A specialized, chronological view of confirmed future assignments.
+- **Career Metrics**: High-fidelity cards displaying conducted vs. proposed ratios.
 
-#### 1. Premium Login & Branding
-![Login Page Placeholder](file:///C:/Users/abhis/.gemini/antigravity/brain/ce17d94b-5802-419c-988e-a33225686478/media__1776454221116.png)
-
-#### 2. Coordinator Dashboard
-![Dashboard Placeholder](file:///C:/Users/abhis/.gemini/antigravity/brain/ce17d94b-5802-419c-988e-a33225686478/media__1776455860359.png)
-
-#### 3. Analytics & Data Visualization
-![Analytics Placeholder](file:///C:/Users/abhis/.gemini/antigravity/brain/ce17d94b-5802-419c-988e-a33225686478/media__1776454563126.png)
-
-#### 4. Workshop Management
-![Management Placeholder](file:///C:/Users/abhis/.gemini/antigravity/brain/ce17d94b-5802-419c-988e-a33225686478/media__1776456845396.png)
+### 3. Advanced Workshop Lifecycle
+Instructors can now manage their entire workflow from the dashboard:
+- **One-Click Actions**: Accept or Reject proposals with instant status feedback.
+- **Rescheduling**: A custom modal interface to postpone workshops based on coordinator requests.
+- **Archival**: Explicit 'Delete' functionality to clean up the dashboard.
 
 ---
-**FOSSEE Workshops | 2026**
+
+## 📸 Visual Showcase
+
+### 1. High-Fidelity India Map Dashboard
+The landing page now features a high-fidelity interactive map that responds to real-time workshop data.
+
+### 2. Instructor Analytics command center
+A dedicated Hub for instructors to track their monthly and career performance.
+
+### 3. Feedback system (Profile Level)
+A centralized comment system integrated directly into coordinator profiles.
+
+---
+**FOSSEE Workshops | Modernization Phase 2026**

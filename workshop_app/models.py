@@ -202,7 +202,8 @@ class Workshop(models.Model):
     date = models.DateField()
     STATUS_CHOICES = [(0, 'Pending'),
                       (1, 'Accepted'),
-                      (2, 'Deleted')]
+                      (2, 'Rejected'),
+                      (3, 'Deleted')]
 
     status = models.IntegerField(choices=STATUS_CHOICES, default=0)
     tnc_accepted = models.BooleanField(
@@ -244,7 +245,8 @@ class Comment(models.Model):
     comment = models.TextField()
     public = models.BooleanField(default=True)
     created_date = models.DateTimeField(default=timezone.now)
-    workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE)
+    workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE, null=True, blank=True)
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='profile_comments')
 
     def __str__(self):
         return f"Comment by {self.author.get_full_name()}"

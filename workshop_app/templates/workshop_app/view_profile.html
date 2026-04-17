@@ -159,6 +159,25 @@
     }
 
     .errorlist { color: #ff5252; margin-left: 1.2rem; font-size: 0.85rem; padding: 0; list-style: none; }
+
+    /* Comments Section */
+    .comment-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .comment-author { font-weight: 800; font-size: 0.9rem; color: var(--primary-color); margin-bottom: 0.5rem; display: block; }
+    .comment-date { font-size: 0.75rem; opacity: 0.5; margin-left: 10px; font-weight: 400; }
+    .comment-text { font-size: 0.95rem; color: rgba(255,255,255,0.8); line-height: 1.5; }
+    
+    .comment-input {
+        width: 100%; border: 1.5px solid var(--glass-border); background: rgba(0,0,0,0.2);
+        border-radius: 20px; padding: 1.2rem; color: #fff; font-family: inherit; font-size: 0.95rem;
+        resize: none; transition: 0.3s; margin-bottom: 1rem;
+    }
+    .comment-input:focus { border-color: var(--primary-color); outline: none; background: rgba(0,0,0,0.4); }
 </style>
 
 <script>
@@ -236,6 +255,37 @@
                         {% endfor %}
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Profile Comments Section -->
+            <h3 class="section-subtitle" style="margin-top: 3rem;"><i class="material-icons">forum</i> Instructor Feedback</h3>
+            
+            <!-- Comment Form -->
+            <form action="" method="post" style="margin-bottom: 2.5rem;">
+                {% csrf_token %}
+                <textarea name="comment" class="comment-input" placeholder="Post a comment or feedback on this coordinator's performance..." rows="3" required></textarea>
+                <div style="text-align: right;">
+                    <button type="submit" class="btn-submit" style="height: 50px; width: 180px; font-size: 0.95rem;">Post Feedback</button>
+                </div>
+            </form>
+
+            <!-- Comments List -->
+            <div class="comments-list">
+                {% for comment in profile_comments %}
+                    <div class="comment-card">
+                        <span class="comment-author">
+                            {{ comment.author.get_full_name|default:comment.author.username }}
+                            <span class="comment-date">{{ comment.created_date|date:"F d, Y @ H:i" }}</span>
+                        </span>
+                        <div class="comment-text">{{ comment.comment }}</div>
+                    </div>
+                {% empty %}
+                    <p style="text-align: center; opacity: 0.4; padding: 2rem;">No feedback has been posted for this coordinator yet.</p>
+                {% endfor %}
+            </div>
+            
+            <div style="margin-top: 2rem; border-top: 1px solid var(--glass-border); padding-top: 2rem;">
+                <a href="{% url 'workshop_app:index' %}" class="btn-cancel">Return to Dashboard</a>
             </div>
         </div>
     {% else %}

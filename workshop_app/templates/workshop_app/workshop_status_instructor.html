@@ -247,6 +247,7 @@
         <a href="{% url 'workshop_app:index' %}" class="btn-home-pill">Home</a>
         
         <div class="nav-links">
+            <a href="{% url 'statistics_app:workshop_stats' %}" class="nav-link-item">Workshop Statistics</a>
             <a href="{% url 'statistics_app:team' %}" class="nav-link-item">Team Statistics</a>
             <a href="{% url 'workshop_app:index' %}" class="nav-link-item active">Workshop Status</a>
             <a href="{% url 'workshop_app:workshop_type_list' %}" class="nav-link-item">Workshop Types</a>
@@ -311,12 +312,24 @@
                                 <td>
                                     {% if ws.status == 1 %}
                                         <span class="pill-badge badge-success-glass">Accepted</span>
+                                    {% elif ws.status == 2 %}
+                                        <span class="pill-badge" style="background: rgba(255, 82, 82, 0.1); color: #ff5252; border: 1px solid rgba(255, 82, 82, 0.2);">Rejected</span>
+                                    {% elif ws.status == 3 %}
+                                        <span class="pill-badge" style="background: rgba(255, 255, 255, 0.05); color: rgba(255, 255, 255, 0.4); border: 1px solid rgba(255, 255, 255, 0.1);">Deleted</span>
                                     {% else %}
                                         <span class="pill-badge badge-warning-glass">Pending</span>
                                     {% endif %}
                                 </td>
-                                <td style="text-align: right;">
-                                    <a href="{% url 'workshop_app:workshop_details' ws.id %}" class="btn-action-glass">View Details</a>
+                                <td style="text-align: right; display: flex; gap: 8px; justify-content: flex-end; align-items: center;">
+                                    {% if ws.status == 0 %}
+                                        <a href="{% url 'workshop_app:accept_workshop' ws.id %}" class="btn-action-glass" style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);">Accept</a>
+                                        <a href="{% url 'workshop_app:reject_workshop' ws.id %}" class="btn-action-glass" style="background: linear-gradient(135deg, #d63031 0%, #ff7675 100%);">Reject</a>
+                                    {% endif %}
+                                    <a href="{% url 'workshop_app:workshop_details' ws.id %}" class="btn-action-glass">Details</a>
+                                    {% if ws.status == 1 %}
+                                        <a href="javascript:void(0)" class="btn-action-glass reschedule-btn" data-id="{{ ws.id }}" data-date="{{ ws.date|date:'Y-m-d' }}" style="background: rgba(116, 185, 255, 0.1); border: 1px solid rgba(116, 185, 255, 0.2); color: #74b9ff;">Reschedule</a>
+                                        <a href="{% url 'workshop_app:delete_workshop' ws.id %}" class="btn-action-glass" onclick="return confirm('Archive this workshop?');" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); box-shadow: none;">Delete</a>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
@@ -326,4 +339,39 @@
         </div>
     {% endif %}
 </div>
+
+<!-- Reschedule Modal -->
+<div id="reschedule_modal" title="Reschedule Workshop" style="display: none;">
+    <form id="reschedule_form" method="post" action="">
+        {% csrf_token %}
+        <div style="padding: 1rem 0;">
+            <p style="font-size: 0.9rem; opacity: 0.7; margin-bottom: 1.5rem;">Select a new date for this workshop. Both you and the coordinator will be notified.</p>
+            <label style="font-size: 0.75rem; font-weight: 800; color: var(--primary-color); text-transform: uppercase; margin-left: 10px;">Select New Date</label>
+            <input type="date" name="new_date" id="new_date_input" required class="input-glass" style="width: 100%; height: 50px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 25px; padding: 0 1.5rem; color: #fff; margin-bottom: 2rem;">
+            <button type="submit" class="btn-action-glass" style="width: 100%; padding: 1rem;">Confirm Reschedule</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $(".reschedule-btn").on("click", function() {
+            var shopId = $(this).data("id");
+            var shopDate = $(this).data("date");
+            $("#new_date_input").val(shopDate);
+            $("#reschedule_form").attr("action", "/change_workshop_date/" + shopId);
+            
+            $("#reschedule_modal").dialog({
+                width: 450,
+                modal: true,
+                draggable: false,
+                resizable: false,
+                show: { effect: "fade", duration: 300 }
+            });
+        });
+
+        // Add premium dialog styling via logic if needed
+        $(".ui-dialog").addClass("glass-card");
+    });
+</script>
 {% endblock %}
